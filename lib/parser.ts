@@ -60,10 +60,16 @@ export function parseHistoryFile(content: string): SearchEntry[] {
         if (entry.url && isGoogleSearch(entry.url)) {
           const query = extractQueryFromUrl(entry.url);
           if (query) {
+            // Chrome time_usec is in microseconds since Windows epoch (Jan 1, 1601)
+            // Convert to Unix timestamp: (microseconds / 1000) - 11644473600000 milliseconds
+            const timestamp = entry.time_usec 
+              ? new Date(parseInt(entry.time_usec) / 1000 - 11644473600000)
+              : new Date(entry.timestamp || Date.now());
+            
             searches.push({
               query,
               url: entry.url,
-              timestamp: new Date(entry.time_usec ? parseInt(entry.time_usec) / 1000 : entry.timestamp || Date.now()),
+              timestamp,
               title: entry.title,
             });
           }
@@ -85,7 +91,7 @@ export function parseHistoryFile(content: string): SearchEntry[] {
         }
       }
     }
-  } catch (e) {
+  } catch {
     // If JSON parsing fails, try parsing as plain text or CSV
     const lines = content.split('\n');
     

@@ -27,7 +27,7 @@ export default function Home() {
             Your Search Wrapped
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Discover insights about your Google search patterns. Upload your browser history and see what you've been searching for.
+            Discover insights about your Google search patterns. Upload your browser history and see what you&apos;ve been searching for.
           </p>
           <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg max-w-2xl mx-auto">
             <p className="text-sm text-gray-700 dark:text-gray-300">
