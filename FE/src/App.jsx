@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import './App.css'
 import UploadModal from './components/UploadModal'
 import SplashScreen from './components/SplashScreen'
+import ResultPage from './components/ResultPage'
 
-function App() {
+function HomePage() {
+  const navigate = useNavigate()
   const [showSplash, setShowSplash] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [uploadedFile, setUploadedFile] = useState(null)
-  const [result, setResult] = useState(null)
 
   useEffect(() => {
     // Show splash for 2.5 seconds
@@ -28,13 +30,9 @@ function App() {
     // For now, we'll just simulate processing
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    // Simulate a result
-    setResult({
-      fileCount: files.length,
-      message: 'Files processed successfully!'
-    })
-    
     setIsModalOpen(false)
+    // Navigate to result page with file count
+    navigate('/result', { state: { fileCount: files.length } })
   }
 
   return (
@@ -44,30 +42,13 @@ function App() {
           <SplashScreen key="splash" />
         ) : (
           <>
-            {!isModalOpen && !result && (
+            {!isModalOpen && (
               <button 
                 className="open-upload-btn"
                 onClick={() => setIsModalOpen(true)}
               >
                 Upload Document
               </button>
-            )}
-
-            {result && (
-              <div className="result-container">
-                <h2>✓ Success!</h2>
-                <p>{result.fileCount} file{result.fileCount > 1 ? 's' : ''} processed successfully!</p>
-                <button 
-                  className="open-upload-btn"
-                  onClick={() => {
-                    setResult(null)
-                    setUploadedFile(null)
-                    setIsModalOpen(true)
-                  }}
-                >
-                  Upload Another File
-                </button>
-              </div>
             )}
 
             {isModalOpen && (
@@ -80,6 +61,17 @@ function App() {
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/result" element={<ResultPage />} />
+      </Routes>
+    </Router>
   )
 }
 
