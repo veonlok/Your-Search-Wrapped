@@ -1,0 +1,54 @@
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #0a0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.splash-logo {
+  filter: drop-shadow(0 10px 40px rgba(59, 130, 246, 0.3));
+}
+
+.splash-logo-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.splash-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 30px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
