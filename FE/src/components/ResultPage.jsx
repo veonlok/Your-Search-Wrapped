@@ -12,7 +12,8 @@ import {
   TopTopicSlide, 
   FunStatsSlide,
   TopListSlide, 
-  OutroSlide 
+  OutroSlide,
+  ActivityHeatmapSlide
 } from './WrappedSlides';
 import './ResultPage.css';
 
@@ -106,6 +107,7 @@ const ResultPage = () => {
     { id: 'wordcloud', component: <WordCloudSlide keywords={wrappedData.keywords} /> },
     { id: 'mood', component: <MoodTimelineSlide moodData={wrappedData.moodData} /> },
     { id: 'peak', component: <PeakTimesSlide peakData={wrappedData.peakData} /> },
+    { id: 'heatmap', component: <ActivityHeatmapSlide /> },
     { id: 'personality', component: <PersonalitySlide personality={wrappedData.personality} /> },
     { id: 'personality-deep', component: <PersonalityDeepDiveSlide personality={wrappedData.personality} /> },
     { id: 'funstats', component: <FunStatsSlide stats={wrappedData.funStats} /> },

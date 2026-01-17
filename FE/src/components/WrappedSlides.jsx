@@ -13,227 +13,22 @@ import {
   Zap,
   Coffee,
   Flame,
-  Heart,
   Star,
   Target,
   Lightbulb,
-  Compass,
-  Rocket,
-  Puzzle,
   Glasses,
-  Microscope,
-  BookOpen,
-  Cpu,
-  Wand2,
-  MessageCircle,
-  Users,
-  Crown,
-  Gem,
   PartyPopper,
-  Sparkles,
   Brain,
   Moon,
   Sun,
   Calendar,
+  Crown,
 } from 'lucide-react';
 import AnimatedClock from './AnimatedClock';
+import { MBTI_DICTIONARY } from '../constants/mbtiDictionary';
+import { KEYWORD_COLORS, FUN_STATS_COLORS, MOOD_COLORS, getBarColor } from '../constants/colors';
+import { DETAIL_ICONS } from '../constants/icons';
 import './WrappedSlides.css';
-
-// ===== MBTI DICTIONARY =====
-const MBTI_DICTIONARY = {
-  'INTJ': {
-    name: 'The Architect',
-    icon: Cpu,
-    color: ['#667eea', '#764ba2'],
-    traits: ['Strategic', 'Independent', 'Logical'],
-    description: 'You approach AI like a master strategist, always thinking 3 steps ahead.',
-    details: {
-      strength: 'Complex problem decomposition',
-      style: 'Systematic & thorough',
-      funFact: 'You rarely ask the same question twice'
-    }
-  },
-  'INTP': {
-    name: 'The Logician',
-    icon: Puzzle,
-    color: ['#4ECDC4', '#44B09E'],
-    traits: ['Analytical', 'Objective', 'Inventive'],
-    description: 'Your curiosity knows no bounds. You explore ideas just to understand them.',
-    details: {
-      strength: 'Finding unconventional solutions',
-      style: 'Exploratory & theoretical',
-      funFact: 'Your follow-up questions are legendary'
-    }
-  },
-  'ENTJ': {
-    name: 'The Commander',
-    icon: Crown,
-    color: ['#FF6B6B', '#ee5253'],
-    traits: ['Decisive', 'Ambitious', 'Efficient'],
-    description: 'You use AI like a CEO uses advisors - direct, purposeful, results-driven.',
-    details: {
-      strength: 'Getting actionable answers fast',
-      style: 'Direct & goal-oriented',
-      funFact: 'You have the shortest avg. prompt length'
-    }
-  },
-  'ENTP': {
-    name: 'The Debater',
-    icon: MessageCircle,
-    color: ['#8C52FF', '#FF52A8'],
-    traits: ['Curious', 'Clever', 'Creative'],
-    description: 'You dig deep into topics, asking follow-up questions until you truly understand.',
-    details: {
-      strength: 'Challenging assumptions',
-      style: 'Playful & provocative',
-      funFact: 'You love testing AI\'s limits'
-    }
-  },
-  'INFJ': {
-    name: 'The Advocate',
-    icon: Heart,
-    color: ['#a29bfe', '#6c5ce7'],
-    traits: ['Insightful', 'Principled', 'Passionate'],
-    description: 'You seek deeper meaning and use AI to explore ideas that matter.',
-    details: {
-      strength: 'Connecting abstract concepts',
-      style: 'Thoughtful & values-driven',
-      funFact: 'Your prompts are surprisingly poetic'
-    }
-  },
-  'INFP': {
-    name: 'The Mediator',
-    icon: Wand2,
-    color: ['#fd79a8', '#e84393'],
-    traits: ['Idealistic', 'Creative', 'Empathetic'],
-    description: 'You treat AI conversations like collaborative creative journeys.',
-    details: {
-      strength: 'Creative problem framing',
-      style: 'Imaginative & open-ended',
-      funFact: 'You say "please" and "thank you" to AI'
-    }
-  },
-  'ENFJ': {
-    name: 'The Protagonist',
-    icon: Users,
-    color: ['#00b894', '#00cec9'],
-    traits: ['Charismatic', 'Inspiring', 'Altruistic'],
-    description: 'You often search for ways to help others or explain things better.',
-    details: {
-      strength: 'Finding ways to teach & share',
-      style: 'Collaborative & supportive',
-      funFact: 'Most of your searches help someone else'
-    }
-  },
-  'ENFP': {
-    name: 'The Campaigner',
-    icon: Rocket,
-    color: ['#FDCB6E', '#f39c12'],
-    traits: ['Enthusiastic', 'Creative', 'Sociable'],
-    description: 'Your AI journey is an adventure - jumping between exciting topics!',
-    details: {
-      strength: 'Making unexpected connections',
-      style: 'Spontaneous & energetic',
-      funFact: 'You explore 3x more unique topics than average'
-    }
-  },
-  'ISTJ': {
-    name: 'The Logistician',
-    icon: BookOpen,
-    color: ['#636e72', '#2d3436'],
-    traits: ['Practical', 'Reliable', 'Thorough'],
-    description: 'You approach AI methodically, building knowledge step by step.',
-    details: {
-      strength: 'Comprehensive research',
-      style: 'Structured & factual',
-      funFact: 'You always verify AI answers'
-    }
-  },
-  'ISFJ': {
-    name: 'The Defender',
-    icon: Gem,
-    color: ['#81ecec', '#74b9ff'],
-    traits: ['Supportive', 'Patient', 'Observant'],
-    description: 'You use AI to master skills that help your community.',
-    details: {
-      strength: 'Practical application',
-      style: 'Careful & considerate',
-      funFact: 'Your searches often end with "best practices"'
-    }
-  },
-  'ESTJ': {
-    name: 'The Executive',
-    icon: Target,
-    color: ['#ff7675', '#d63031'],
-    traits: ['Organized', 'Logical', 'Assertive'],
-    description: 'Efficiency is your game. You get what you need and move on.',
-    details: {
-      strength: 'Clear, actionable requests',
-      style: 'No-nonsense & efficient',
-      funFact: 'Fastest average response satisfaction rate'
-    }
-  },
-  'ESFJ': {
-    name: 'The Consul',
-    icon: Coffee,
-    color: ['#fab1a0', '#e17055'],
-    traits: ['Caring', 'Social', 'Loyal'],
-    description: 'You love learning things you can share with friends and family.',
-    details: {
-      strength: 'Finding shareable knowledge',
-      style: 'Warm & conversational',
-      funFact: 'You share AI answers more than anyone'
-    }
-  },
-  'ISTP': {
-    name: 'The Virtuoso',
-    icon: Microscope,
-    color: ['#00b5ad', '#009c95'],
-    traits: ['Observant', 'Practical', 'Creative'],
-    description: 'Hands-on learning is your style. You search to build and fix things.',
-    details: {
-      strength: 'Technical troubleshooting',
-      style: 'Pragmatic & experimental',
-      funFact: 'Most of your searches include "how to"'
-    }
-  },
-  'ISFP': {
-    name: 'The Adventurer',
-    icon: Compass,
-    color: ['#a55eea', '#8854d0'],
-    traits: ['Artistic', 'Sensitive', 'Curious'],
-    description: 'You explore AI with artistic curiosity, finding beauty in knowledge.',
-    details: {
-      strength: 'Creative exploration',
-      style: 'Aesthetic & intuitive',
-      funFact: 'Your searches have a creative flair'
-    }
-  },
-  'ESTP': {
-    name: 'The Entrepreneur',
-    icon: Zap,
-    color: ['#ffeaa7', '#fdcb6e'],
-    traits: ['Energetic', 'Perceptive', 'Bold'],
-    description: 'Fast answers for fast action. You search on-the-go.',
-    details: {
-      strength: 'Quick information retrieval',
-      style: 'Bold & direct',
-      funFact: 'Highest mobile search percentage'
-    }
-  },
-  'ESFP': {
-    name: 'The Entertainer',
-    icon: Star,
-    color: ['#ff9ff3', '#f368e0'],
-    traits: ['Spontaneous', 'Energetic', 'Enthusiastic'],
-    description: 'AI is your playground! You explore with joy and share the fun.',
-    details: {
-      strength: 'Making learning fun',
-      style: 'Playful & engaging',
-      funFact: 'You use more emojis in prompts than anyone'
-    }
-  }
-};
 
 /**
  * Animated counter component that counts up from 0 to a target value
@@ -275,6 +70,51 @@ export const IntroSlide = () => {
   return (
     <div className="slide-container">
       <div className="animated-bg intro-bg" />
+      
+      {/* Spotify-style floating shapes */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,0,0,0.15) 0%, transparent 70%)',
+          right: '-100px',
+          top: '-100px',
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+          x: [0, 20, 0],
+          y: [0, 20, 0],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 300,
+          height: 300,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,0,0,0.1) 0%, transparent 70%)',
+          left: '-50px',
+          bottom: '-50px',
+        }}
+        animate={{
+          scale: [1, 1.15, 1],
+          x: [0, -15, 0],
+          y: [0, -15, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 1,
+        }}
+      />
       
       <motion.div 
         className="slide-content intro-content"
@@ -330,89 +170,248 @@ export const IntroSlide = () => {
 
 // ===== 2. TOTAL SEARCHES SLIDE =====
 export const TotalSearchesSlide = ({ totalPrompts = 1247 }) => {
+  const [phase, setPhase] = useState(0); // 0: intro, 1: number reveal, 2: full reveal
+  const maxPhase = 2;
+  
+  const handleClick = (e) => {
+    if (phase < maxPhase) {
+      e.stopPropagation();
+      setPhase(prev => prev + 1);
+    }
+  };
+
+  // Pre-generate stable bubble configurations
+  const bubbles = useMemo(() => 
+    [...Array(8)].map((_, i) => ({
+      size: 15 + (i * 5) % 25,
+      left: 15 + (i * 11) % 70,
+      top: 12 + (i * 13) % 76,
+      yMove: 35 + (i * 7) % 25,
+      duration: 4 + (i % 3),
+    })), []
+  );
+
   return (
-    <div className="slide-container total-searches-slide">
+    <div className="slide-container total-searches-slide" onClick={handleClick} style={{ cursor: phase < maxPhase ? 'pointer' : 'default' }}>
       <div className="animated-bg total-bg" />
       
-      {/* Subtle pulsing ring behind number */}
+      {/* Tap to continue hint */}
+      {phase < maxPhase && (
+        <motion.div
+          className="tap-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: 'absolute',
+            bottom: 40,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            color: 'rgba(255,255,255,0.6)',
+            fontSize: '0.9rem',
+            zIndex: 100,
+          }}
+        >
+          Tap to continue
+        </motion.div>
+      )}
+      
+      {/* Spotify-style reverberating circles - appear on phase 1 */}
+      <AnimatePresence>
+        {phase >= 1 && [...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            style={{
+              position: 'absolute',
+              width: 180 + i * 120,
+              height: 180 + i * 120,
+              borderRadius: '50%',
+              border: `3px solid rgba(255, 255, 255, ${0.5 - i * 0.08})`,
+              left: '50%',
+              top: '50%',
+              marginLeft: -(90 + i * 60),
+              marginTop: -(90 + i * 60),
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.5 - i * 0.08, 0.8 - i * 0.12, 0.5 - i * 0.08],
+            }}
+            transition={{
+              duration: 2 + i * 0.4,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 0.15,
+            }}
+          />
+        ))}
+      </AnimatePresence>
+      
+      {/* Center glow pulse - intensifies on reveal */}
       <motion.div
         style={{
           position: 'absolute',
-          width: 300,
-          height: 300,
+          width: 400,
+          height: 400,
           borderRadius: '50%',
-          border: '3px solid rgba(29, 185, 84, 0.3)',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 60%)',
           left: '50%',
           top: '50%',
-          marginLeft: -150,
-          marginTop: -150,
+          marginLeft: -200,
+          marginTop: -200,
         }}
+        initial={{ scale: 0.5, opacity: 0 }}
         animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.3, 0.5, 0.3],
+          scale: phase >= 1 ? [1, 1.4, 1] : 0.5,
+          opacity: phase >= 1 ? [0.6, 0.2, 0.6] : 0,
         }}
         transition={{
-          duration: 3,
-          repeat: Infinity,
+          duration: 2.5,
+          repeat: phase >= 1 ? Infinity : 0,
           ease: 'easeInOut',
         }}
       />
+      
+      {/* Floating bubbles - appear after full reveal */}
+      {phase >= 2 && bubbles.map((bubble, i) => (
+        <motion.div
+          key={`bubble-${i}`}
+          style={{
+            position: 'absolute',
+            width: bubble.size,
+            height: bubble.size,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(255,255,255,0.1))',
+            left: `${bubble.left}%`,
+            top: `${bubble.top}%`,
+          }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{
+            y: [0, -bubble.yMove, 0],
+            opacity: [0.3, 0.7, 0.3],
+            scale: [0.9, 1.2, 0.9],
+          }}
+          transition={{
+            duration: bubble.duration,
+            repeat: Infinity,
+            delay: i * 0.2,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
       
       <motion.div 
         className="slide-content"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.2 }}
       >
-        <motion.div
-          className="stat-intro-large"
-          initial={{ y: -30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
+        {/* Phase 0: Teaser text */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
+            <motion.div
+              key="teaser"
+              className="stat-intro-large"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
+              transition={{ duration: 0.5 }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
+            >
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.6, type: 'spring', stiffness: 200 }}
+              >
+                <Search size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
+              </motion.div>
+              <motion.span 
+                style={{ fontSize: '5rem', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Ready to see<br/>your number?
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 1+: Main content */}
+        {phase >= 1 && (
+          <>
+            <motion.div
+              className="stat-intro-large"
+              initial={{ y: -50, opacity: 0, filter: 'blur(10px)' }}
+              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <motion.div
+                className="intro-icon-wrap"
+                initial={{ rotate: -180, scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+                >
+                  <Search size={28} strokeWidth={2.5} color="#fff" />
+                </motion.div>
+              </motion.div>
+              <span>This year you made</span>
+            </motion.div>
+            
+            <motion.div
+              className="mega-number-container"
+              initial={{ scale: 0, opacity: 0, rotateX: 90 }}
+              animate={{ scale: 1, opacity: 1, rotateX: 0 }}
+              transition={{ delay: 0.4, duration: 0.8, type: 'spring', stiffness: 80 }}
+            >
+              <motion.h1 
+                className="mega-number glow-number"
+                animate={phase >= 2 ? { 
+                  textShadow: [
+                    '0 0 40px rgba(255,255,255,0.5)',
+                    '0 0 80px rgba(255,255,255,0.8)',
+                    '0 0 40px rgba(255,255,255,0.5)',
+                  ]
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <AnimatedCounter value={totalPrompts} duration={1.8} delay={0.6} />
+              </motion.h1>
+            </motion.div>
+            
+            <motion.p
+              className="stat-label-large"
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 1.2, duration: 0.5 }}
+            >
+              searches
+            </motion.p>
+          </>
+        )}
+        
+        {/* Phase 2: Badge reveal */}
+        {phase >= 2 && (
           <motion.div
-            className="intro-icon-wrap"
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            className="comparison-badge-new"
+            initial={{ scale: 0, y: 40, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, type: 'spring', stiffness: 150, damping: 12 }}
           >
-            <Search size={28} strokeWidth={2.5} color="#fff" />
+            <motion.div 
+              className="badge-icon"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+            >
+              <TrendingUp size={20} color="#E91E63" />
+            </motion.div>
+            <span>Top <strong>22%</strong> of all users</span>
           </motion.div>
-          <span>This year you made</span>
-        </motion.div>
-        
-        <motion.div
-          className="mega-number-container"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.6, type: 'spring', stiffness: 80 }}
-        >
-          <motion.h1 
-            className="mega-number glow-number"
-          >
-            <AnimatedCounter value={totalPrompts} duration={2} delay={0.8} />
-          </motion.h1>
-        </motion.div>
-        
-        <motion.p
-          className="stat-label-large"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1 }}
-        >
-          searches
-        </motion.p>
-        
-        <motion.div
-          className="comparison-badge-new"
-          initial={{ scale: 0, y: 20 }}
-          animate={{ scale: 1, y: 0 }}
-          transition={{ delay: 1.4, type: 'spring' }}
-        >
-          <div className="badge-icon">
-            <TrendingUp size={20} />
-          </div>
-          <span>Top <strong>22%</strong> of all users</span>
-        </motion.div>
+        )}
       </motion.div>
     </div>
   );
@@ -422,86 +421,171 @@ export const TotalSearchesSlide = ({ totalPrompts = 1247 }) => {
 export const PersonalitySlide = ({ personality = { code: 'ENTP' }}) => {
   const mbti = MBTI_DICTIONARY[personality.code] || MBTI_DICTIONARY['ENTP'];
   const IconComponent = mbti.icon;
+  const [phase, setPhase] = useState(0); // 0: mystery, 1: icon reveal, 2: code reveal, 3: full reveal
+  const maxPhase = 3;
+  
+  // Auto-progress through phases with 2-3 second delays
+  useEffect(() => {
+    const timers = [];
+    
+    if (phase === 0) {
+      timers.push(setTimeout(() => setPhase(1), 2500));
+    } else if (phase === 1) {
+      timers.push(setTimeout(() => setPhase(2), 2500));
+    } else if (phase === 2) {
+      timers.push(setTimeout(() => setPhase(3), 2500));
+    }
+    
+    return () => timers.forEach(t => clearTimeout(t));
+  }, [phase]);
   
   return (
     <div className="slide-container">
       <motion.div 
         className="animated-bg personality-bg"
-        style={{ 
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: 1,
           background: `linear-gradient(135deg, ${mbti.color[0]} 0%, ${mbti.color[1]} 100%)` 
         }}
+        transition={{ duration: 1.5 }}
       />
       
       <motion.div
         className="personality-glow"
         style={{ background: `radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)` }}
         initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 2, opacity: 1 }}
-        transition={{ duration: 1.2 }}
+        animate={{ scale: phase >= 1 ? 2.5 : 0, opacity: phase >= 1 ? 1 : 0 }}
+        transition={{ duration: 1.5, ease: 'easeOut' }}
       />
       
       <motion.div className="slide-content">
-        <motion.p
-          className="slide-eyebrow"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          Your AI Personality Type
-        </motion.p>
-        
-        <motion.div
-          className="personality-icon-ring"
-          style={{ borderColor: 'rgba(255,255,255,0.3)' }}
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.4, type: 'spring', stiffness: 100 }}
-        >
-          <motion.div
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <IconComponent size={56} color="#fff" />
-          </motion.div>
-        </motion.div>
-        
-        <motion.div
-          className="personality-card-new"
-          style={{
-            background: 'rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(20px)',
-          }}
-          initial={{ y: 50, opacity: 0, scale: 0.9 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, type: 'spring', stiffness: 100 }}
-        >
-          <p className="personality-code-big">{personality.code}</p>
-          <h1 className="personality-type-name">{mbti.name}</h1>
-        </motion.div>
-        
-        <div className="personality-traits-new">
-          {mbti.traits.map((trait, i) => (
-            <motion.span
-              key={trait}
-              className="trait-pill"
-              style={{ borderColor: mbti.color[0] }}
-              initial={{ scale: 0, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              transition={{ delay: 1 + i * 0.1 }}
+        {/* Phase 0: Mystery text */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
+            <motion.div
+              key="mystery"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
+              transition={{ duration: 0.5 }}
+              style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
             >
-              {trait}
-            </motion.span>
-          ))}
-        </div>
+              <motion.div
+                initial={{ scale: 0, rotate: 180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.7, type: 'spring', stiffness: 150 }}
+              >
+                <Brain size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
+              </motion.div>
+              <motion.p
+                style={{ fontSize: '5rem', color: 'white', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50, filter: 'blur(15px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              >
+                We found your<br/>AI personality
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 1+: Eyebrow */}
+        {phase >= 1 && (
+          <motion.p
+            className="slide-eyebrow"
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Your AI Personality Type
+          </motion.p>
+        )}
         
-        <motion.p
-          className="personality-desc-new"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4 }}
-        >
-          {mbti.description}
-        </motion.p>
+        {/* Phase 1+: Icon Ring */}
+        {phase >= 1 && (
+          <motion.div
+            className="personality-icon-ring"
+            style={{ borderColor: 'rgba(255,255,255,0.6)', boxShadow: `0 0 40px ${mbti.color[0]}50` }}
+            initial={{ scale: 0, rotate: -180, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ 
+                scale: 1, 
+                rotate: phase === 1 ? 360 : 0 
+              }}
+              transition={{ 
+                scale: { delay: 0.3, type: 'spring' },
+                rotate: phase === 1 ? { duration: 2, repeat: Infinity, ease: 'linear' } : { duration: 0.5 }
+              }}
+            >
+              <IconComponent size={56} color="#fff" />
+            </motion.div>
+          </motion.div>
+        )}
+        
+        {/* Phase 2+: Personality Card */}
+        {phase >= 2 && (
+          <motion.div
+            className="personality-card-new"
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(20px)',
+            }}
+            initial={{ y: 60, opacity: 0, scale: 0.8, rotateX: 45 }}
+            animate={{ y: 0, opacity: 1, scale: 1, rotateX: 0 }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 80 }}
+          >
+            <motion.p 
+              className="personality-code-big"
+              initial={{ opacity: 0, letterSpacing: '0.5em' }}
+              animate={{ opacity: 1, letterSpacing: '0.15em' }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              {personality.code}
+            </motion.p>
+            <motion.h1 
+              className="personality-type-name"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              {mbti.name}
+            </motion.h1>
+          </motion.div>
+        )}
+        
+        {/* Phase 3: Traits and Description */}
+        {phase >= 3 && (
+          <>
+            <div className="personality-traits-new">
+              {mbti.traits.map((trait, i) => (
+                <motion.span
+                  key={trait}
+                  className="trait-pill"
+                  style={{ borderColor: 'white' }}
+                  initial={{ scale: 0, y: 30, opacity: 0 }}
+                  animate={{ scale: 1, y: 0, opacity: 1 }}
+                  transition={{ delay: i * 0.15, type: 'spring', stiffness: 200 }}
+                >
+                  {trait}
+                </motion.span>
+              ))}
+            </div>
+            
+            <motion.p
+              className="personality-desc-new"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              {mbti.description}
+            </motion.p>
+          </>
+        )}
       </motion.div>
     </div>
   );
@@ -511,12 +595,6 @@ export const PersonalitySlide = ({ personality = { code: 'ENTP' }}) => {
 export const PersonalityDeepDiveSlide = ({ personality = { code: 'ENTP' }}) => {
   const mbti = MBTI_DICTIONARY[personality.code] || MBTI_DICTIONARY['ENTP'];
   const IconComponent = mbti.icon;
-  
-  const detailIcons = {
-    strength: Zap,
-    style: Glasses,
-    funFact: Lightbulb
-  };
   
   return (
     <div className="slide-container">
@@ -546,7 +624,7 @@ export const PersonalityDeepDiveSlide = ({ personality = { code: 'ENTP' }}) => {
         
         <div className="deep-dive-cards">
           {Object.entries(mbti.details).map(([key, value], i) => {
-            const DetailIcon = detailIcons[key];
+            const DetailIcon = DETAIL_ICONS[key];
             return (
               <motion.div
                 key={key}
@@ -614,7 +692,6 @@ export const WordCloudSlide = ({ keywords = [
     return () => clearTimeout(timer);
   }, []);
 
-  const colors = ['#1DB954', '#8C52FF', '#FF6B6B', '#4ECDC4', '#FDCB6E', '#FF52A8', '#667eea', '#00b894'];
   const maxCount = Math.max(...keywords.map(k => typeof k === 'object' ? k.count : 50));
 
   return (
@@ -672,7 +749,7 @@ export const WordCloudSlide = ({ keywords = [
                       className="orbit-word"
                       style={{ 
                         fontSize: `${size}rem`,
-                        color: colors[i % colors.length],
+                        color: KEYWORD_COLORS[i % KEYWORD_COLORS.length],
                       }}
                       initial={{ 
                         opacity: 0, 
@@ -730,13 +807,13 @@ export const WordCloudSlide = ({ keywords = [
                       transition={{ delay: i * 0.08 }}
                     >
                       <span className="keyword-rank">#{i + 1}</span>
-                      <span className="keyword-name" style={{ color: colors[i % colors.length] }}>
+                      <span className="keyword-name" style={{ color: KEYWORD_COLORS[i % KEYWORD_COLORS.length] }}>
                         {word}
                       </span>
                       <div className="keyword-bar-container">
                         <motion.div
                           className="keyword-bar"
-                          style={{ background: colors[i % colors.length] }}
+                          style={{ background: KEYWORD_COLORS[i % KEYWORD_COLORS.length] }}
                           initial={{ width: 0 }}
                           animate={{ width: `${percentage}%` }}
                           transition={{ delay: i * 0.08 + 0.2, duration: 0.4 }}
@@ -775,11 +852,45 @@ export const PeakTimesSlide = ({ peakData = {
   totalHours: 142
 }}) => {
   const isNight = peakData.isNight;
+  const [phase, setPhase] = useState(0); // 0: intro, 1: title + icon, 2: stats
+  const maxPhase = 2;
+  
+  const handleClick = (e) => {
+    if (phase < maxPhase) {
+      e.stopPropagation();
+      setPhase(prev => prev + 1);
+    }
+  };
   
   return (
-    <div className={`slide-container peak-mega ${isNight ? 'night-mode' : 'day-mode'}`}>
+    <div className={`slide-container peak-mega ${isNight ? 'night-mode' : 'day-mode'}`} onClick={handleClick} style={{ cursor: phase < maxPhase ? 'pointer' : 'default' }}>
+      {/* Tap to continue hint */}
+      {phase < maxPhase && (
+        <motion.div
+          className="tap-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: 'absolute',
+            bottom: 50,
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            zIndex: 100,
+          }}
+        >
+          Tap to continue
+        </motion.div>
+      )}
       <motion.div 
         className="animated-bg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
         style={{
           background: isNight 
             ? 'linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%)'
@@ -787,10 +898,10 @@ export const PeakTimesSlide = ({ peakData = {
         }}
       />
       
-      {/* Animated Clock in Background */}
-      <AnimatedClock isNight={isNight} peakHour={isNight ? 23 : 14} size={700} />
+      {/* Animated Clock in Background - appears on phase 1 */}
+      {phase >= 1 && <AnimatedClock isNight={isNight} peakHour={isNight ? 23 : 14} size={700} />}
       
-      {/* Animated stars for night */}
+      {/* Animated stars for night - fade in progressively */}
       {isNight && (
         <div className="peak-bg-elements">
           {[...Array(15)].map((_, i) => (
@@ -798,22 +909,23 @@ export const PeakTimesSlide = ({ peakData = {
               key={i}
               className="star"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: `${10 + (i * 7) % 80}%`,
+                top: `${5 + (i * 11) % 90}%`,
                 width: 2,
                 height: 2,
                 background: 'rgba(255,255,255,0.6)',
                 borderRadius: '50%',
                 position: 'absolute',
               }}
+              initial={{ opacity: 0, scale: 0 }}
               animate={{
-                opacity: [0.2, 0.6, 0.2],
-                scale: [0.8, 1.2, 0.8],
+                opacity: phase >= 1 ? [0.2, 0.8, 0.2] : 0,
+                scale: phase >= 1 ? [0.8, 1.5, 0.8] : 0,
               }}
               transition={{
-                duration: 2 + Math.random() * 2,
+                duration: 2 + (i % 3),
                 repeat: Infinity,
-                delay: Math.random() * 2,
+                delay: phase >= 1 ? i * 0.1 : 0,
               }}
             />
           ))}
@@ -821,64 +933,129 @@ export const PeakTimesSlide = ({ peakData = {
       )}
       
       <motion.div className="slide-content peak-mega-content">
-        <motion.p
-          className="slide-eyebrow"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          Your Prime Time
-        </motion.p>
+        {/* Phase 0: Teaser */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
+            <motion.div
+              key="teaser"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
+              style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
+            >
+              <motion.div
+                initial={{ scale: 0, rotate: -90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.6, type: 'spring', stiffness: 180 }}
+              >
+                <Clock size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
+              </motion.div>
+              <motion.p
+                style={{ fontSize: '5rem', color: 'white', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50, filter: 'blur(12px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                When do you<br/>search the most?
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 1+: Eyebrow */}
+        {phase >= 1 && (
+          <motion.p
+            className="slide-eyebrow"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Your Prime Time
+          </motion.p>
+        )}
         
-        <motion.div
-          className="peak-mega-icon"
-          initial={{ scale: 0, rotate: isNight ? 0 : -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', delay: 0.3, stiffness: 80 }}
-        >
-          {isNight ? <Moon size={64} strokeWidth={1.5} /> : <Sun size={64} strokeWidth={1.5} />}
-        </motion.div>
+        {/* Phase 1+: Icon with dramatic entrance */}
+        {phase >= 1 && (
+          <motion.div
+            className="peak-mega-icon"
+            initial={{ scale: 0, rotate: isNight ? -90 : 90, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 12 }}
+          >
+            <motion.div
+              animate={phase >= 2 ? { 
+                scale: [1, 1.1, 1],
+                filter: ['drop-shadow(0 0 20px rgba(255,255,255,0.3))', 'drop-shadow(0 0 40px rgba(255,255,255,0.6))', 'drop-shadow(0 0 20px rgba(255,255,255,0.3))']
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              {isNight ? <Moon size={64} strokeWidth={1.5} /> : <Sun size={64} strokeWidth={1.5} />}
+            </motion.div>
+          </motion.div>
+        )}
         
-        <motion.h1
-          className="peak-mega-title"
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5, type: 'spring' }}
-        >
-          {peakData.period}
-        </motion.h1>
+        {/* Phase 1+: Title with impact */}
+        {phase >= 1 && (
+          <motion.h1
+            className="peak-mega-title"
+            initial={{ scale: 2, opacity: 0, filter: 'blur(20px)' }}
+            animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {peakData.period}
+          </motion.h1>
+        )}
         
-        <motion.div
-          className="peak-mega-time"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          <Clock size={24} />
-          <span>Peak at <strong>{peakData.time}</strong></span>
-        </motion.div>
+        {/* Phase 1+: Time badge */}
+        {phase >= 1 && (
+          <motion.div
+            className="peak-mega-time"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+            >
+              <Clock size={24} />
+            </motion.div>
+            <span>Peak at <strong>{peakData.time}</strong></span>
+          </motion.div>
+        )}
         
-        <motion.div
-          className="peak-stats-mega"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-        >
-          <div className="peak-stat-box">
-            <Flame size={28} color="#FF6B6B" />
-            <span className="peak-stat-value">{peakData.totalHours}h</span>
-            <span className="peak-stat-label">Total Hours</span>
-          </div>
-          <div className="peak-stat-box">
-            <Clock size={28} color="#4ECDC4" />
-            <span className="peak-stat-value">{peakData.avgSessionLength}</span>
-            <span className="peak-stat-label">Avg Session</span>
-          </div>
-          <div className="peak-stat-box">
-            <Calendar size={28} color="#FDCB6E" />
-            <span className="peak-stat-value">{peakData.mostActiveDay}</span>
-            <span className="peak-stat-label">Best Day</span>
-          </div>
-        </motion.div>
+        {/* Phase 2: Stats boxes with stagger */}
+        {phase >= 2 && (
+          <motion.div
+            className="peak-stats-mega"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {[
+              { icon: Flame, color: '#FF6B6B', value: `${peakData.totalHours}h`, label: 'Total Hours' },
+              { icon: Clock, color: '#4ECDC4', value: peakData.avgSessionLength, label: 'Avg Session' },
+              { icon: Calendar, color: '#FDCB6E', value: peakData.mostActiveDay, label: 'Best Day' },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                className="peak-stat-box"
+                initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: i * 0.15, type: 'spring', stiffness: 150 }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.3 }}
+                >
+                  <stat.icon size={28} color={stat.color} />
+                </motion.div>
+                <span className="peak-stat-value">{stat.value}</span>
+                <span className="peak-stat-label">{stat.label}</span>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );
@@ -901,109 +1078,230 @@ export const MoodTimelineSlide = ({ moodData = [
 ]}) => {
   const maxValue = Math.max(...moodData.map(d => d.value));
   const peakMonth = moodData.findIndex(d => d.value === maxValue);
+  const [phase, setPhase] = useState(0); // 0: intro, 1: bars animate, 2: peak reveal
+  const maxPhase = 2;
   
-  // Teal color scheme matching background
-  const getBarColor = (value, index) => {
-    if (index === peakMonth) return '#1DB954';
-    const ratio = value / maxValue;
-    if (ratio > 0.7) return '#4DB6AC';
-    if (ratio > 0.4) return '#26A69A';
-    return 'rgba(255, 255, 255, 0.2)';
+  const handleClick = (e) => {
+    if (phase < maxPhase) {
+      e.stopPropagation();
+      setPhase(prev => prev + 1);
+    }
   };
   
   return (
-    <div className="slide-container">
-      <div className="animated-bg mood-bg" style={{ background: '#00897B' }} />
+    <div className="slide-container" onClick={handleClick} style={{ cursor: phase < maxPhase ? 'pointer' : 'default' }}>
+      {/* Tap to continue hint */}
+      {phase < maxPhase && (
+        <motion.div
+          className="tap-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: 'absolute',
+            bottom: 50,
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            zIndex: 100,
+          }}
+        >
+          Tap to continue
+        </motion.div>
+      )}
+      <div className="animated-bg mood-bg" style={{ background: MOOD_COLORS.BACKGROUND }} />
+      
+      {/* Ambient wave effect */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: '150%',
+          height: 200,
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
+          bottom: '20%',
+          left: '-25%',
+          transform: 'skewY(-3deg)',
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: phase >= 1 ? 1 : 0,
+          x: ['-10%', '10%', '-10%'],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: '150%',
+          height: 150,
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent)',
+          bottom: '35%',
+          left: '-25%',
+          transform: 'skewY(2deg)',
+        }}
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: phase >= 1 ? 1 : 0,
+          x: ['10%', '-10%', '10%'],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
       
       <motion.div className="slide-content mood-content">
-        <motion.p
-          className="slide-eyebrow"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          Your Year in Searches
-        </motion.p>
-        
-        <motion.h2
-          className="mood-title"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, type: 'spring' }}
-        >
-          Activity Timeline
-        </motion.h2>
-        
-        <div className="mood-chart-mega">
-          {moodData.map((data, i) => (
+        {/* Phase 0: Teaser */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
             <motion.div
-              key={data.month}
-              className={`mood-bar-wrap ${i === peakMonth ? 'peak' : ''}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + i * 0.05, type: 'spring', stiffness: 100 }}
-              style={{ position: 'relative' }}
+              key="teaser"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+              style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
             >
-              {i === peakMonth && (
-                <motion.div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    zIndex: 10,
-                  }}
-                  initial={{ opacity: 0, y: 20, scale: 0 }}
-                  animate={{ opacity: 1, y: -40, scale: 1 }}
-                  transition={{ delay: 2, duration: 0.5, type: 'spring' }}
-                >
-                  <motion.div
-                    animate={{ 
-                      boxShadow: [
-                        '0 0 25px rgba(29, 185, 84, 0.6)',
-                        '0 0 40px rgba(29, 185, 84, 0.8)',
-                        '0 0 25px rgba(29, 185, 84, 0.6)',
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    style={{
-                      width: 34,
-                      height: 34,
-                      background: 'linear-gradient(135deg, #1DB954 0%, #1ed760 100%)',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Crown size={16} color="#fff" />
-                  </motion.div>
-                </motion.div>
-              )}
-              <div className="mood-bar-inner">
-                <motion.div
-                  className="mood-bar-fill"
-                  style={{ background: getBarColor(data.value, i) }}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${(data.value / maxValue) * 100}%` }}
-                  transition={{ delay: 0.8 + i * 0.05, duration: 0.6, ease: 'easeOut' }}
-                />
-              </div>
-              <span className="mood-month-label">{data.month}</span>
+              <motion.div
+                initial={{ scale: 0, y: -30 }}
+                animate={{ scale: 1, y: 0 }}
+                transition={{ duration: 0.6, type: 'spring', stiffness: 200, damping: 10 }}
+              >
+                <TrendingUp size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
+              </motion.div>
+              <motion.p
+                style={{ fontSize: '5rem', color: 'white', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.3, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              >
+                How did your<br/>curiosity evolve?
+              </motion.p>
             </motion.div>
-          ))}
-        </div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 1+: Header */}
+        {phase >= 1 && (
+          <>
+            <motion.p
+              className="slide-eyebrow"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Your Year in Searches
+            </motion.p>
         
-        <motion.div
-          className="mood-insight"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5 }}
-        >
-          <TrendingUp size={20} color="#1DB954" />
-          <span><strong>{moodData[peakMonth].month}</strong> was your most curious month</span>
-        </motion.div>
+            <motion.h2
+              className="mood-title"
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
+            >
+              Activity Timeline
+            </motion.h2>
+          </>
+        )}
+        
+        {/* Phase 1+: Chart with staggered bars */}
+        {phase >= 1 && (
+          <div className="mood-chart-mega">
+            {moodData.map((data, i) => (
+              <motion.div
+                key={data.month}
+                className={`mood-bar-wrap ${i === peakMonth ? 'peak' : ''}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.06, type: 'spring', stiffness: 120 }}
+                style={{ position: 'relative' }}
+              >
+                {/* Phase 2: Peak crown reveal */}
+                {i === peakMonth && phase >= 2 && (
+                  <motion.div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      zIndex: 10,
+                    }}
+                    initial={{ opacity: 0, y: 20, scale: 0 }}
+                    animate={{ opacity: 1, y: -40, scale: 1 }}
+                    transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
+                  >
+                    <motion.div
+                      animate={{ 
+                        boxShadow: [
+                          '0 0 25px rgba(29, 185, 84, 0.6)',
+                          '0 0 50px rgba(29, 185, 84, 0.9)',
+                          '0 0 25px rgba(29, 185, 84, 0.6)',
+                        ],
+                        scale: [1, 1.1, 1]
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      style={{
+                        width: 34,
+                        height: 34,
+                        background: 'linear-gradient(135deg, #1DB954 0%, #1ed760 100%)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Crown size={16} color="#fff" />
+                    </motion.div>
+                  </motion.div>
+                )}
+                <div className="mood-bar-inner">
+                  <motion.div
+                    className="mood-bar-fill"
+                    style={{ background: getBarColor(data.value, maxValue, i, peakMonth) }}
+                    initial={{ height: 0 }}
+                    animate={{ height: `${(data.value / maxValue) * 100}%` }}
+                    transition={{ delay: 0.5 + i * 0.06, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  />
+                </div>
+                <motion.span 
+                  className="mood-month-label"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 + i * 0.06 }}
+                >
+                  {data.month}
+                </motion.span>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        
+        {/* Phase 2: Insight */}
+        {phase >= 2 && (
+          <motion.div
+            className="mood-insight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <TrendingUp size={20} color="#4DB6AC" />
+            </motion.div>
+            <span><strong>{moodData[peakMonth].month}</strong> was your most curious month</span>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );
@@ -1011,115 +1309,179 @@ export const MoodTimelineSlide = ({ moodData = [
 
 // ===== 8. TOP TOPIC EXPLOSION SLIDE =====
 export const TopTopicSlide = ({ topTopic = 'Machine Learning', percentage = 34 }) => {
-  return (
-    <div className="slide-container">
-      <div className="animated-bg topic-explosion-bg" />
-      
-      {/* Animated background rays */}
-      <motion.div
-        className="explosion-rays"
-        initial={{ rotate: 0, scale: 0 }}
-        animate={{ rotate: 360, scale: 1 }}
-        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-      >
-        {[...Array(16)].map((_, i) => (
-          <div
-            key={i}
-            className="ray"
-            style={{ transform: `rotate(${i * 22.5}deg)` }}
-          />
-        ))}
-      </motion.div>
+  const [phase, setPhase] = useState(0); // 0: buildup, 1: reveal, 2: stats
+  const maxPhase = 2;
+  
+  const handleClick = (e) => {
+    if (phase < maxPhase) {
+      e.stopPropagation();
+      setPhase(prev => prev + 1);
+    }
+  };
 
-      {/* Floating particles */}
-      <div className="topic-particles">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="topic-particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${4 + Math.random() * 8}px`,
-              height: `${4 + Math.random() * 8}px`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.8, 0.3],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-              ease: 'easeInOut',
-            }}
-          />
-        ))}
-      </div>
+  return (
+    <div className="slide-container" onClick={handleClick} style={{ cursor: phase < maxPhase ? 'pointer' : 'default' }}>
+      {/* Tap to continue hint */}
+      {phase < maxPhase && (
+        <motion.div
+          className="tap-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: 'absolute',
+            bottom: 50,
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            zIndex: 100,
+          }}
+        >
+          Tap to continue
+        </motion.div>
+      )}
+      <motion.div 
+        className="animated-bg topic-explosion-bg"
+        initial={{ opacity: 0.5 }}
+        animate={{ opacity: phase >= 1 ? 1 : 0.5 }}
+        transition={{ duration: 1 }}
+      />
+      
+      {/* Subtle ambient glow - appears on reveal */}
+      {phase >= 1 && (
+        <motion.div
+          style={{
+            position: 'absolute',
+            width: '80%',
+            height: '80%',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,107,107,0.15) 0%, transparent 70%)',
+            left: '10%',
+            top: '10%',
+          }}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        />
+      )}
       
       <motion.div className="slide-content topic-content">
-        <motion.div
-          className="topic-badge-big"
-          initial={{ scale: 0, rotate: -10 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', delay: 0.3, stiffness: 200 }}
-        >
+        {/* Phase 0: Suspense buildup */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
+            <motion.div
+              key="buildup"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 1.5, filter: 'blur(30px)' }}
+              transition={{ exit: { duration: 0.6 } }}
+              style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
+            >
+              <motion.div
+                initial={{ scale: 0, rotate: 360 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.8, type: 'spring', stiffness: 150 }}
+              >
+                <Target size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
+              </motion.div>
+              <motion.p
+                style={{ fontSize: '5rem', color: 'white', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50, filter: 'blur(20px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                What topic<br/>owned your year?
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 1+: Topic Badge */}
+        {phase >= 1 && (
           <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            className="topic-badge-big"
+            initial={{ scale: 0, rotate: -20, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           >
-            <Target size={22} />
+            <motion.div
+              initial={{ rotate: 0 }}
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+            >
+              <Target size={22} />
+            </motion.div>
+            <span>#1 Topic</span>
           </motion.div>
-          <span>#1 Topic</span>
-        </motion.div>
+        )}
         
-        <motion.h1
-          className="topic-title-huge"
-          initial={{ scale: 2.5, opacity: 0, filter: 'blur(40px)' }}
-          animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
-          transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {topTopic}
-        </motion.h1>
-
-        <motion.div
-          className="topic-glow-ring"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
-          transition={{ delay: 1.5, duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        
-        <motion.div
-          className="topic-percentage"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          <motion.span 
-            className="percentage-number"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 1.4, type: 'spring', stiffness: 200 }}
+        {/* Phase 1+: Topic Title with dramatic entrance */}
+        {phase >= 1 && (
+          <motion.h1
+            className="topic-title-huge"
+            initial={{ scale: 3, opacity: 0, filter: 'blur(50px)', y: 50 }}
+            animate={{ scale: 1, opacity: 1, filter: 'blur(0px)', y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            {percentage}%
-          </motion.span>
-          <span className="percentage-label">of all your searches</span>
-        </motion.div>
+            {topTopic}
+          </motion.h1>
+        )}
 
-        <motion.div
-          className="topic-bar-container"
-          initial={{ opacity: 0, width: 0 }}
-          animate={{ opacity: 1, width: '100%' }}
-          transition={{ delay: 1.6, duration: 0.8 }}
-        >
+        {phase >= 1 && (
           <motion.div
-            className="topic-bar-fill"
-            initial={{ width: 0 }}
-            animate={{ width: `${percentage}%` }}
-            transition={{ delay: 2, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="topic-glow-ring"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
+            transition={{ delay: 0.8, duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           />
-        </motion.div>
+        )}
+        
+        {/* Phase 2: Stats reveal */}
+        {phase >= 2 && (
+          <>
+            <motion.div
+              className="topic-percentage"
+              initial={{ opacity: 0, y: 40, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <motion.span 
+                className="percentage-number"
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              >
+                {percentage}%
+              </motion.span>
+              <motion.span 
+                className="percentage-label"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                of all your searches
+              </motion.span>
+            </motion.div>
+
+            <motion.div
+              className="topic-bar-container"
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              style={{ transformOrigin: 'left' }}
+            >
+              <motion.div
+                className="topic-bar-fill"
+                initial={{ width: 0 }}
+                animate={{ width: `${percentage}%` }}
+                transition={{ delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </motion.div>
+          </>
+        )}
       </motion.div>
     </div>
   );
@@ -1133,6 +1495,16 @@ export const FunStatsSlide = ({ stats = {
   uniqueTopics: 89,
   curiosityScore: 94
 }}) => {
+  const [phase, setPhase] = useState(0); // 0: intro, 1: title, 2: cards reveal
+  const maxPhase = 2;
+  
+  const handleClick = (e) => {
+    if (phase < maxPhase) {
+      e.stopPropagation();
+      setPhase(prev => prev + 1);
+    }
+  };
+
   const statItems = [
     { label: 'Longest Session', value: stats.longestSession, icon: Flame, color: '#FF6B6B' },
     { label: 'Most in One Day', value: stats.mostSearchesDay, icon: Zap, color: '#FDCB6E' },
@@ -1141,50 +1513,177 @@ export const FunStatsSlide = ({ stats = {
     { label: 'Curiosity Score', value: `${stats.curiosityScore}%`, icon: Star, color: '#1DB954' },
   ];
   
+  // Pre-generate stable bubble configurations
+  const bubbles = useMemo(() => {
+    return [...Array(10)].map((_, i) => ({
+      color: FUN_STATS_COLORS[i % FUN_STATS_COLORS.length],
+      size: 30 + (i * 7) % 40,
+      left: 8 + (i * 9) % 80,
+      top: 15 + (i * 17) % 70,
+      yMove: 30 + (i * 5) % 20,
+      xMove: ((i % 2) - 0.5) * 15,
+      duration: 3.5 + (i % 4) * 0.5,
+    }));
+  }, []);
+  
   return (
-    <div className="slide-container">
+    <div className="slide-container" onClick={handleClick} style={{ cursor: phase < maxPhase ? 'pointer' : 'default' }}>
+      {/* Tap to continue hint */}
+      {phase < maxPhase && (
+        <motion.div
+          className="tap-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: 'absolute',
+            bottom: 50,
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            zIndex: 100,
+          }}
+        >
+          Tap to continue
+        </motion.div>
+      )}
       <div className="animated-bg fun-stats-bg" />
       
+      {/* Colorful floating bubbles - appear after phase 1 */}
+      {phase >= 1 && bubbles.map((bubble, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: bubble.size,
+            height: bubble.size,
+            borderRadius: '50%',
+            background: `radial-gradient(circle at 30% 30%, ${bubble.color}60, ${bubble.color}20)`,
+            left: `${bubble.left}%`,
+            top: `${bubble.top}%`,
+            boxShadow: `0 4px 20px ${bubble.color}40`,
+          }}
+          animate={{
+            y: [0, -bubble.yMove, 0],
+            x: [0, bubble.xMove, 0],
+            opacity: [0.4, 0.8, 0.4],
+            scale: [0.9, 1.15, 0.9],
+          }}
+          transition={{
+            duration: bubble.duration,
+            repeat: Infinity,
+            delay: i * 0.35,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+      
       <motion.div className="slide-content">
-        <motion.p
-          className="slide-eyebrow"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          Fun Facts
-        </motion.p>
-        
-        <motion.h2
-          className="fun-stats-title"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, type: 'spring' }}
-        >
-          By The Numbers
-        </motion.h2>
-        
-        <div className="fun-stats-grid">
-          {statItems.map((stat, i) => (
+        {/* Phase 0: Teaser */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
             <motion.div
-              key={stat.label}
-              className="fun-stat-card"
-              style={{ borderColor: stat.color }}
-              initial={{ opacity: 0, scale: 0.8, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 0.4 + i * 0.1, type: 'spring', stiffness: 100 }}
-              whileHover={{ scale: 1.05, y: -5 }}
+              key="teaser"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
+              style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}
             >
               <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, delay: i * 0.5 }}
+                initial={{ scale: 0, rotate: -45 }}
+                animate={{ scale: [0, 1.2, 1], rotate: 0 }}
+                transition={{ duration: 0.7, times: [0, 0.6, 1], type: 'spring', stiffness: 200 }}
               >
-                <stat.icon size={32} color={stat.color} />
+                <PartyPopper size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
               </motion.div>
-              <span className="fun-stat-value">{stat.value}</span>
-              <span className="fun-stat-label">{stat.label}</span>
+              <motion.p
+                style={{ fontSize: '5rem', color: 'white', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.35, duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
+              >
+                Let's look at<br/>your numbers
+              </motion.p>
             </motion.div>
-          ))}
-        </div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 1+: Title */}
+        {phase >= 1 && (
+          <>
+            <motion.p
+              className="slide-eyebrow"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Fun Facts
+            </motion.p>
+            
+            <motion.h2
+              className="fun-stats-title"
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
+            >
+              By The Numbers
+            </motion.h2>
+          </>
+        )}
+        
+        {/* Phase 2: Cards with dramatic stagger */}
+        {phase >= 2 && (
+          <div className="fun-stats-grid">
+            {statItems.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                className="fun-stat-card"
+                style={{ borderColor: stat.color }}
+                initial={{ opacity: 0, scale: 0, y: 50, rotateY: 90 }}
+                animate={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
+                transition={{ 
+                  delay: i * 0.12, 
+                  type: 'spring', 
+                  stiffness: 120,
+                  damping: 12
+                }}
+                whileHover={{ scale: 1.08, y: -8, boxShadow: `0 20px 40px ${stat.color}40` }}
+              >
+                <motion.div
+                  initial={{ rotate: -180, scale: 0 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  transition={{ delay: i * 0.12 + 0.2, type: 'spring' }}
+                >
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.3 }}
+                  >
+                    <stat.icon size={32} color={stat.color} />
+                  </motion.div>
+                </motion.div>
+                <motion.span 
+                  className="fun-stat-value"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: i * 0.12 + 0.3 }}
+                >
+                  {stat.value}
+                </motion.span>
+                <motion.span 
+                  className="fun-stat-label"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: i * 0.12 + 0.4 }}
+                >
+                  {stat.label}
+                </motion.span>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </div>
   );
@@ -1203,9 +1702,82 @@ export const TopListSlide = ({ topItems = [
   'Data Analysis',
   'API Integration',
 ]}) => {
+  // Pre-generate stable bubble configurations
+  const bubbles = useMemo(() => 
+    [...Array(12)].map((_, i) => ({
+      size: 25 + (i * 6) % 35,
+      left: 20 + (i * 7) % 60,
+      top: 10 + (i * 11) % 80,
+      yMove: 25 + (i * 5) % 30,
+      xMove: ((i % 3) - 1) * 12,
+      duration: 4 + (i % 4) * 0.7,
+      colorType: i % 3,
+    })), []
+  );
+
+  const getBackground = (type) => {
+    if (type === 0) return 'radial-gradient(circle at 30% 30%, rgba(224,64,251,0.4), rgba(224,64,251,0.1))';
+    if (type === 1) return 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), rgba(255,255,255,0.05))';
+    return 'radial-gradient(circle at 30% 30%, rgba(156,39,176,0.4), rgba(156,39,176,0.1))';
+  };
+
   return (
     <div className="slide-container">
       <div className="animated-bg list-slide-bg" />
+      
+      {/* Ambient glow effect */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 600,
+          height: 600,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(224,64,251,0.3) 0%, transparent 60%)',
+          left: '55%',
+          top: '50%',
+          marginLeft: -300,
+          marginTop: -300,
+        }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.4, 0.7, 0.4],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      
+      {/* Floating bubbles */}
+      {bubbles.map((bubble, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: bubble.size,
+            height: bubble.size,
+            borderRadius: '50%',
+            background: getBackground(bubble.colorType),
+            left: `${bubble.left}%`,
+            top: `${bubble.top}%`,
+            boxShadow: '0 4px 20px rgba(224,64,251,0.2)',
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{
+            y: [0, -bubble.yMove, 0],
+            x: [0, bubble.xMove, 0],
+            opacity: [0.3, 0.7, 0.3],
+            scale: [0.8, 1.1, 0.8],
+          }}
+          transition={{
+            duration: bubble.duration,
+            repeat: Infinity,
+            delay: i * 0.25,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
 
       <motion.div className="slide-content list-content">
         <motion.p
@@ -1245,11 +1817,11 @@ export const TopListSlide = ({ topItems = [
           animate={{ scaleX: 1 }}
           transition={{ delay: 1.2, duration: 0.6 }}
           style={{
-            width: '60px',
+            width: '80px',
             height: '4px',
-            background: 'rgba(255, 255, 255, 0.3)',
+            background: 'linear-gradient(90deg, #E040FB 0%, rgba(255,255,255,0.4) 100%)',
             borderRadius: '2px',
-            marginTop: '2rem',
+            marginTop: '2.5rem',
             transformOrigin: 'left',
           }}
         />
@@ -1269,28 +1841,60 @@ export const OutroSlide = ({ onUploadMore, personality = { code: 'ENTP' } }) => 
         style={{ background: `linear-gradient(135deg, ${mbti.color[0]} 0%, ${mbti.color[1]} 100%)` }}
       />
       
-      {/* Confetti-like celebration particles - small and subtle */}
+      {/* Expanding celebration rings */}
+      {[...Array(3)].map((_, i) => (
+        <motion.div
+          key={`ring-${i}`}
+          style={{
+            position: 'absolute',
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            border: '2px solid rgba(255,255,255,0.3)',
+            left: '50%',
+            top: '35%',
+            marginLeft: -100,
+            marginTop: -100,
+          }}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{
+            scale: [0.5, 2.5, 2.5],
+            opacity: [0, 0.5, 0],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            delay: i * 1,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+      
+      {/* Confetti-like celebration particles */}
       <div className="outro-particles">
-        {[...Array(12)].map((_, i) => (
+        {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
             style={{
               position: 'absolute',
-              width: 4,
-              height: 4,
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.6)',
-              left: `${10 + Math.random() * 80}%`,
-              top: `${10 + Math.random() * 80}%`,
+              width: 6 + Math.random() * 4,
+              height: 6 + Math.random() * 4,
+              borderRadius: i % 2 === 0 ? '50%' : '2px',
+              background: i % 3 === 0 ? 'rgba(255, 255, 255, 0.8)' : i % 3 === 1 ? mbti.color[0] : 'rgba(255,255,255,0.5)',
+              left: `${5 + Math.random() * 90}%`,
+              top: `${5 + Math.random() * 90}%`,
             }}
             animate={{
-              y: [0, -80, 0],
-              opacity: [0.3, 0.8, 0.3],
+              y: [0, -100 - Math.random() * 50, 0],
+              x: [0, (Math.random() - 0.5) * 40, 0],
+              opacity: [0, 0.9, 0],
+              rotate: [0, 360, 720],
             }}
             transition={{
-              duration: 4 + Math.random() * 2,
+              duration: 3 + Math.random() * 2,
               repeat: Infinity,
               delay: Math.random() * 3,
+              ease: 'easeInOut',
             }}
           />
         ))}
@@ -1336,6 +1940,358 @@ export const OutroSlide = ({ onUploadMore, personality = { code: 'ENTP' } }) => 
         >
           Share Your Wrapped
         </motion.button>
+      </motion.div>
+    </div>
+  );
+};
+
+// ===== ACTIVITY HEATMAP SLIDE =====
+export const ActivityHeatmapSlide = ({ heatmapData = null }) => {
+  const [phase, setPhase] = useState(0); // 0: teaser, 1: reveal heatmap
+  const maxPhase = 1;
+  
+  const handleClick = (e) => {
+    if (phase < maxPhase) {
+      e.stopPropagation();
+      setPhase(prev => prev + 1);
+    }
+  };
+  
+  // Default sample data based on the user's heatmap
+  const defaultData = {
+    Monday: [40, 35, 25, 15, 10, 8, 20, 45, 60, 75, 80, 85, 90, 85, 80, 75, 70, 65, 80, 90, 95, 85, 60, 45],
+    Tuesday: [30, 45, 55, 35, 20, 15, 25, 50, 65, 80, 85, 90, 85, 80, 75, 70, 65, 75, 85, 90, 80, 70, 50, 35],
+    Wednesday: [35, 40, 45, 30, 15, 10, 20, 40, 55, 70, 80, 85, 90, 85, 80, 75, 80, 85, 90, 85, 75, 65, 55, 40],
+    Thursday: [25, 30, 35, 25, 15, 10, 15, 35, 50, 65, 75, 80, 85, 90, 85, 80, 85, 90, 100, 95, 85, 70, 55, 35],
+    Friday: [20, 25, 30, 20, 12, 8, 15, 30, 45, 60, 70, 75, 80, 75, 70, 65, 70, 80, 75, 60, 50, 45, 40, 30],
+    Saturday: [15, 20, 25, 18, 10, 5, 8, 15, 25, 40, 55, 70, 85, 75, 60, 50, 55, 120, 85, 60, 45, 35, 30, 25],
+    Sunday: [50, 55, 45, 30, 20, 15, 10, 15, 25, 35, 50, 130, 85, 70, 80, 75, 85, 60, 55, 70, 125, 80, 55, 40],
+  };
+  
+  const data = heatmapData || defaultData;
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  
+  // Find max value for color scaling
+  const allValues = Object.values(data).flat();
+  const maxValue = Math.max(...allValues);
+  const totalSearches = allValues.reduce((a, b) => a + b, 0);
+  
+  // Get color based on value intensity - Spotify green gradient
+  const getHeatColor = (value) => {
+    const intensity = value / maxValue;
+    if (intensity < 0.15) return 'rgba(30, 215, 96, 0.1)';
+    if (intensity < 0.3) return 'rgba(30, 215, 96, 0.25)';
+    if (intensity < 0.45) return 'rgba(30, 215, 96, 0.4)';
+    if (intensity < 0.6) return 'rgba(30, 215, 96, 0.55)';
+    if (intensity < 0.75) return 'rgba(30, 215, 96, 0.7)';
+    if (intensity < 0.9) return 'rgba(30, 215, 96, 0.85)';
+    return 'rgba(30, 215, 96, 1)';
+  };
+  
+  // Find peak time
+  let peakDay = '';
+  let peakHour = 0;
+  let peakValue = 0;
+  days.forEach(day => {
+    data[day].forEach((val, hour) => {
+      if (val > peakValue) {
+        peakValue = val;
+        peakDay = day;
+        peakHour = hour;
+      }
+    });
+  });
+  
+  // Calculate busiest day
+  const dayTotals = days.map(day => ({
+    day,
+    total: data[day].reduce((a, b) => a + b, 0)
+  }));
+  const busiestDay = dayTotals.reduce((a, b) => a.total > b.total ? a : b);
+  
+  // Calculate weekend vs weekday
+  const weekdayTotal = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    .reduce((sum, day) => sum + data[day].reduce((a, b) => a + b, 0), 0);
+  const weekendTotal = ['Saturday', 'Sunday']
+    .reduce((sum, day) => sum + data[day].reduce((a, b) => a + b, 0), 0);
+  const weekendPercentage = Math.round((weekendTotal / totalSearches) * 100);
+  
+  return (
+    <div className="slide-container" onClick={handleClick} style={{ cursor: phase < maxPhase ? 'pointer' : 'default' }}>
+      {/* Tap to continue hint */}
+      {phase < maxPhase && (
+        <motion.div
+          className="tap-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: 'absolute',
+            bottom: 50,
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            zIndex: 100,
+          }}
+        >
+          Tap to continue
+        </motion.div>
+      )}
+      
+      <motion.div 
+        className="animated-bg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        style={{
+          background: 'linear-gradient(180deg, #1a1a1a 0%, #121212 100%)'
+        }}
+      />
+      
+      <motion.div className="slide-content" style={{ 
+        padding: '60px 20px 30px', 
+        maxWidth: '1100px', 
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        height: '100%',
+        boxSizing: 'border-box',
+        margin: '0 auto',
+      }}>
+        {/* Phase 0: Teaser */}
+        <AnimatePresence mode="wait">
+          {phase === 0 && (
+            <motion.div
+              key="teaser"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
+              style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', flex: 1, justifyContent: 'center' }}
+            >
+              <motion.div
+                initial={{ scale: 0, rotate: -90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.6, type: 'spring', stiffness: 180 }}
+              >
+                <Calendar size={64} strokeWidth={1.5} color="rgba(255,255,255,0.7)" />
+              </motion.div>
+              <motion.p
+                style={{ fontSize: '5rem', color: 'white', fontWeight: 700, lineHeight: 1.1, textAlign: 'center' }}
+                initial={{ opacity: 0, x: 50, filter: 'blur(12px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Your weekly<br/>rhythm
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Phase 1: Heatmap */}
+        {phase >= 1 && (
+          <>
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{ marginBottom: '20px' }}
+            >
+              <h2 style={{ 
+                color: 'white', 
+                fontSize: '1.8rem', 
+                fontWeight: 800, 
+                margin: 0,
+                letterSpacing: '-0.02em',
+              }}>
+                Your Search Activity
+              </h2>
+              <p style={{ 
+                color: 'rgba(255,255,255,0.5)', 
+                fontSize: '0.9rem', 
+                margin: '4px 0 0 0',
+                fontWeight: 500,
+              }}>
+                Hour by hour, day by day
+              </p>
+            </motion.div>
+            
+            {/* Heatmap Container */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                borderRadius: '16px',
+                padding: '16px',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {/* Hour labels */}
+              <div style={{ 
+                display: 'flex', 
+                marginLeft: '40px',
+                marginBottom: '8px',
+              }}>
+                {['12AM', '6AM', '12PM', '6PM'].map((label, i) => (
+                  <div
+                    key={label}
+                    style={{
+                      flex: 1,
+                      fontSize: '0.7rem',
+                      color: 'rgba(255,255,255,0.4)',
+                      fontWeight: 600,
+                      textAlign: i === 0 ? 'left' : 'center',
+                    }}
+                  >
+                    {label}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Heatmap Grid */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+                {days.map((day, dayIndex) => (
+                  <div key={day} style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                    {/* Day label */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + dayIndex * 0.05 }}
+                      style={{
+                        width: '32px',
+                        fontSize: '0.7rem',
+                        color: 'rgba(255,255,255,0.6)',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      {day.slice(0, 3)}
+                    </motion.div>
+                    
+                    {/* Cells row */}
+                    <div style={{ display: 'flex', flex: 1, gap: '2px', height: '100%' }}>
+                      {data[day].map((value, hour) => (
+                        <motion.div
+                          key={`cell-${day}-${hour}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.4 + dayIndex * 0.03 + hour * 0.005 }}
+                          style={{
+                            flex: 1,
+                            borderRadius: '3px',
+                            background: getHeatColor(value),
+                            border: day === peakDay && hour === peakHour ? '2px solid #fff' : 'none',
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Legend */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: '6px',
+                marginTop: '12px',
+              }}>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.65rem', fontWeight: 600 }}>LESS</span>
+                {[0.1, 0.3, 0.5, 0.7, 0.9].map((intensity, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      borderRadius: '2px',
+                      background: `rgba(30, 215, 96, ${intensity})`,
+                    }}
+                  />
+                ))}
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.65rem', fontWeight: 600 }}>MORE</span>
+              </div>
+            </motion.div>
+            
+            {/* Insights Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              style={{
+                marginTop: '20px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px',
+              }}
+            >
+              {/* Peak Time */}
+              <div style={{
+                background: 'rgba(30, 215, 96, 0.1)',
+                borderRadius: '12px',
+                padding: '14px 12px',
+                textAlign: 'center',
+              }}>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+                  Peak Time
+                </div>
+                <div style={{ color: '#1ed760', fontSize: '1.3rem', fontWeight: 800 }}>
+                  {peakHour > 12 ? peakHour - 12 : peakHour || 12}{peakHour >= 12 ? 'PM' : 'AM'}
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', fontWeight: 500 }}>
+                  {peakDay}
+                </div>
+              </div>
+              
+              {/* Busiest Day */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px',
+                padding: '14px 12px',
+                textAlign: 'center',
+              }}>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+                  Busiest Day
+                </div>
+                <div style={{ color: 'white', fontSize: '1.3rem', fontWeight: 800 }}>
+                  {busiestDay.day.slice(0, 3)}
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', fontWeight: 500 }}>
+                  {Math.round((busiestDay.total / totalSearches) * 100)}% of searches
+                </div>
+              </div>
+              
+              {/* Weekend Activity */}
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '12px',
+                padding: '14px 12px',
+                textAlign: 'center',
+              }}>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+                  Weekend
+                </div>
+                <div style={{ color: 'white', fontSize: '1.3rem', fontWeight: 800 }}>
+                  {weekendPercentage}%
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', fontWeight: 500 }}>
+                  of activity
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
       </motion.div>
     </div>
   );
