@@ -11,10 +11,10 @@ import {
   MoodTimelineSlide,
   PeakTimesSlide, 
   TopTopicSlide, 
-  FunStatsSlide,
   TopListSlide, 
   OutroSlide,
-  ActivityHeatmapSlide
+  ActivityHeatmapSlide,
+  ShareModal
 } from './WrappedSlides';
 import './ResultPage.css';
 
@@ -24,6 +24,7 @@ const ResultPage = () => {
   const apiData = location.state?.wrappedData;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Redirect to home if no data
   useEffect(() => {
@@ -115,8 +116,7 @@ const ResultPage = () => {
     { id: 'heatmap', component: <ActivityHeatmapSlide /> },
     { id: 'personality', component: <PersonalitySlide personality={wrappedData.personality} /> },
     { id: 'personality-deep', component: <PersonalityDeepDiveSlide personality={wrappedData.personality} /> },
-    { id: 'funstats', component: <FunStatsSlide stats={wrappedData.funStats} /> },
-    { id: 'outro', component: <OutroSlide onUploadMore={handleUploadMore} personality={wrappedData.personality} /> },
+    { id: 'outro', component: <OutroSlide onUploadMore={handleUploadMore} personality={wrappedData.personality} wrappedData={wrappedData} onShareClick={() => setIsShareModalOpen(true)} /> },
   ];
 
   const goToSlide = useCallback((index) => {
@@ -248,6 +248,13 @@ const ResultPage = () => {
           {slides[currentSlide].component}
         </motion.div>
       </AnimatePresence>
+      
+      {/* Share Modal */}
+      <ShareModal 
+        isOpen={isShareModalOpen} 
+        onClose={() => setIsShareModalOpen(false)} 
+        wrappedData={wrappedData} 
+      />
     </div>
   );
 };

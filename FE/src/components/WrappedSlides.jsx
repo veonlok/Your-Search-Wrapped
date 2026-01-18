@@ -5,7 +5,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import {
   Search,
   TrendingUp,
@@ -23,6 +23,9 @@ import {
   Sun,
   Calendar,
   Crown,
+  X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import AnimatedClock from './AnimatedClock';
 import { MBTI_DICTIONARY } from '../constants/mbtiDictionary';
@@ -394,24 +397,6 @@ export const TotalSearchesSlide = ({ totalPrompts = 1247 }) => {
           </>
         )}
         
-        {/* Phase 2: Badge reveal */}
-        {phase >= 2 && (
-          <motion.div
-            className="comparison-badge-new"
-            initial={{ scale: 0, y: 40, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, type: 'spring', stiffness: 150, damping: 12 }}
-          >
-            <motion.div 
-              className="badge-icon"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-            >
-              <TrendingUp size={20} color="#E91E63" />
-            </motion.div>
-            <span>Top <strong>22%</strong> of all users</span>
-          </motion.div>
-        )}
       </motion.div>
     </div>
   );
@@ -738,9 +723,9 @@ export const WordCloudSlide = ({ keywords = [
                 {keywords.slice(0, 10).map((item, i) => {
                   const word = typeof item === 'string' ? item : item.word;
                   const count = typeof item === 'object' ? item.count : 50;
-                  const size = 1 + (count / maxCount) * 1.2;
+                  const size = 2.5 + (count / maxCount) * 3.5; // MUCH bigger
                   const angle = (i / 10) * 360;
-                  const radius = 100 + (i % 3) * 40;
+                  const radius = 220 + (i % 3) * 90; // MUCH bigger
                   const duration = 8 + i * 0.5;
                   
                   return (
@@ -1024,38 +1009,6 @@ export const PeakTimesSlide = ({ peakData = {
           </motion.div>
         )}
         
-        {/* Phase 2: Stats boxes with stagger */}
-        {phase >= 2 && (
-          <motion.div
-            className="peak-stats-mega"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {[
-              { icon: Flame, color: '#FF6B6B', value: `${peakData.totalHours}h`, label: 'Total Hours' },
-              { icon: Clock, color: '#4ECDC4', value: peakData.avgSessionLength, label: 'Avg Session' },
-              { icon: Calendar, color: '#FDCB6E', value: peakData.mostActiveDay, label: 'Best Day' },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                className="peak-stat-box"
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: i * 0.15, type: 'spring', stiffness: 150 }}
-              >
-                <motion.div
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.3 }}
-                >
-                  <stat.icon size={28} color={stat.color} />
-                </motion.div>
-                <span className="peak-stat-value">{stat.value}</span>
-                <span className="peak-stat-label">{stat.label}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
       </motion.div>
     </div>
   );
@@ -1114,50 +1067,6 @@ export const MoodTimelineSlide = ({ moodData = [
       )}
       <div className="animated-bg mood-bg" style={{ background: MOOD_COLORS.BACKGROUND }} />
       
-      {/* Ambient wave effect */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: '150%',
-          height: 200,
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
-          bottom: '20%',
-          left: '-25%',
-          transform: 'skewY(-3deg)',
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: phase >= 1 ? 1 : 0,
-          x: ['-10%', '10%', '-10%'],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: '150%',
-          height: 150,
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent)',
-          bottom: '35%',
-          left: '-25%',
-          transform: 'skewY(2deg)',
-        }}
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: phase >= 1 ? 1 : 0,
-          x: ['10%', '-10%', '10%'],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      
       <motion.div className="slide-content mood-content">
         {/* Phase 0: Teaser */}
         <AnimatePresence mode="wait">
@@ -1211,96 +1120,105 @@ export const MoodTimelineSlide = ({ moodData = [
           </>
         )}
         
-        {/* Phase 1+: Chart with staggered bars */}
+        {/* Phase 1+: Chart container - separate and fixed height */}
         {phase >= 1 && (
-          <div className="mood-chart-mega">
-            {moodData.map((data, i) => (
-              <motion.div
-                key={data.month}
-                className={`mood-bar-wrap ${i === peakMonth ? 'peak' : ''}`}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.06, type: 'spring', stiffness: 120 }}
-                style={{ position: 'relative' }}
-              >
-                {/* Phase 2: Peak crown reveal */}
-                {i === peakMonth && phase >= 2 && (
-                  <motion.div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      zIndex: 10,
-                    }}
-                    initial={{ opacity: 0, y: 20, scale: 0 }}
-                    animate={{ opacity: 1, y: -40, scale: 1 }}
-                    transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
-                  >
-                    <motion.div
-                      animate={{ 
-                        boxShadow: [
-                          '0 0 25px rgba(29, 185, 84, 0.6)',
-                          '0 0 50px rgba(29, 185, 84, 0.9)',
-                          '0 0 25px rgba(29, 185, 84, 0.6)',
-                        ],
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      style={{
-                        width: 34,
-                        height: 34,
-                        background: 'linear-gradient(135deg, #1DB954 0%, #1ed760 100%)',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Crown size={16} color="#fff" />
-                    </motion.div>
-                  </motion.div>
-                )}
-                <div className="mood-bar-inner">
-                  <motion.div
-                    className="mood-bar-fill"
-                    style={{ background: getBarColor(data.value, maxValue, i, peakMonth) }}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${(data.value / maxValue) * 100}%` }}
-                    transition={{ delay: 0.5 + i * 0.06, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  />
-                </div>
-                <motion.span 
-                  className="mood-month-label"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 + i * 0.06 }}
+          <div className="mood-chart-container">
+            <div className="mood-chart-mega">
+              {moodData.map((data, i) => (
+                <motion.div
+                  key={data.month}
+                  className={`mood-bar-wrap${phase >= 2 && i === peakMonth ? ' peak' : ''}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.06, type: 'spring', stiffness: 120 }}
+                  style={{ position: 'relative' }}
                 >
-                  {data.month}
-                </motion.span>
+                  {/* Phase 2: Peak crown reveal */}
+                  {i === peakMonth && phase >= 2 && (
+                    <motion.div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                      }}
+                      initial={{ opacity: 0, y: 20, scale: 0 }}
+                      animate={{ opacity: 1, y: -40, scale: 1 }}
+                      transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
+                    >
+                      <motion.div
+                        animate={{ 
+                          boxShadow: [
+                            '0 0 25px rgba(29, 185, 84, 0.6)',
+                            '0 0 50px rgba(29, 185, 84, 0.9)',
+                            '0 0 25px rgba(29, 185, 84, 0.6)',
+                          ],
+                          scale: [1, 1.1, 1]
+                        }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        style={{
+                          width: 34,
+                          height: 34,
+                          background: 'linear-gradient(135deg, #1DB954 0%, #1ed760 100%)',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Crown size={16} color="#fff" />
+                      </motion.div>
+                    </motion.div>
+                  )}
+                  <div className="mood-bar-inner">
+                    <motion.div
+                      className="mood-bar-fill"
+                      style={{ background: getBarColor(data.value, maxValue, i, peakMonth) }}
+                      initial={{ height: 0 }}
+                      animate={{ height: `${(data.value / maxValue) * 100}%` }}
+                      transition={{ delay: 0.5 + i * 0.06, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                  </div>
+                  <motion.span 
+                    className="mood-month-label"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 + i * 0.06 }}
+                  >
+                    {data.month}
+                  </motion.span>
+                </motion.div>
+              ))}
+            </div>
+            
+            {/* Phase 2: Insight - absolutely positioned below chart, inside chart container */}
+            {phase >= 2 && (
+              <motion.div
+                className="mood-insight-container"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                <motion.div
+                  className="mood-insight-content"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, duration: 0.4, type: 'spring', stiffness: 200 }}
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <TrendingUp size={20} color="#4DB6AC" />
+                  </motion.div>
+                  <span><strong>{moodData[peakMonth].month}</strong> was your most curious month</span>
+                </motion.div>
               </motion.div>
-            ))}
+            )}
           </div>
-        )}
-        
-        {/* Phase 2: Insight */}
-        {phase >= 2 && (
-          <motion.div
-            className="mood-insight"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <TrendingUp size={20} color="#4DB6AC" />
-            </motion.div>
-            <span><strong>{moodData[peakMonth].month}</strong> was your most curious month</span>
-          </motion.div>
         )}
       </motion.div>
     </div>
@@ -1623,14 +1541,6 @@ export const FunStatsSlide = ({ stats = {
               Fun Facts
             </motion.p>
             
-            <motion.h2
-              className="fun-stats-title"
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
-            >
-              By The Numbers
-            </motion.h2>
           </>
         )}
         
@@ -1831,8 +1741,15 @@ export const TopListSlide = ({ topItems = [
 };
 
 // ===== 11. OUTRO SLIDE =====
-export const OutroSlide = ({ onUploadMore, personality = { code: 'ENTP' } }) => {
+export const OutroSlide = ({ onUploadMore, personality = { code: 'ENTP' }, wrappedData = {}, onShareClick }) => {
   const mbti = MBTI_DICTIONARY[personality.code] || MBTI_DICTIONARY['ENTP'];
+  
+  const handleShareClick = (e) => {
+    e.stopPropagation();
+    if (onShareClick) {
+      onShareClick();
+    }
+  };
   
   return (
     <div className="slide-container">
@@ -1931,7 +1848,7 @@ export const OutroSlide = ({ onUploadMore, personality = { code: 'ENTP' } }) => 
         
         <motion.button
           className="outro-cta"
-          onClick={onUploadMore}
+          onClick={handleShareClick}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
@@ -1942,6 +1859,607 @@ export const OutroSlide = ({ onUploadMore, personality = { code: 'ENTP' } }) => 
         </motion.button>
       </motion.div>
     </div>
+  );
+};
+
+// ===== 12. SHARE MODAL =====
+export const ShareModal = ({ isOpen, onClose, wrappedData = {} }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(0);
+  const cardRef = useRef(null);
+  
+  const personality = wrappedData.personality || { code: 'ENTP', type: 'Deep Diver' };
+  const mbti = MBTI_DICTIONARY[personality.code] || MBTI_DICTIONARY['ENTP'];
+  const topTopic = wrappedData.topTopic || 'Machine Learning';
+  const totalPrompts = wrappedData.totalPrompts || 0;
+  const peakData = wrappedData.peakData || { period: 'Night Owl', time: '11:00 PM' };
+  
+  // Card designs - different layouts with distinct colors
+  const cardDesigns = [
+    {
+      id: 'classic',
+      name: 'Classic',
+      bgColor: `linear-gradient(135deg, ${mbti.color[0]} 0%, ${mbti.color[1]} 100%)`,
+      renderCard: (isExport = false) => (
+        <div style={{
+          width: isExport ? '1080px' : '100%',
+          height: isExport ? '1080px' : 'auto',
+          background: `linear-gradient(135deg, ${mbti.color[0]} 0%, ${mbti.color[1]} 100%)`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: isExport ? '80px' : '2rem',
+          boxSizing: 'border-box',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          borderRadius: isExport ? '0' : '20px',
+        }}>
+          <div style={{ fontSize: isExport ? '32px' : '1.5rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: isExport ? '20px' : '1rem', letterSpacing: '-0.02em' }}>
+            Your Search Wrapped
+          </div>
+          <div style={{ fontSize: isExport ? '120px' : '4.5rem', fontWeight: 900, color: 'white', marginBottom: isExport ? '40px' : '0.5rem', lineHeight: 1 }}>
+            {totalPrompts.toLocaleString()}
+          </div>
+          <div style={{ fontSize: isExport ? '28px' : '1.25rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', marginBottom: isExport ? '60px' : '2rem' }}>
+            searches this year
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isExport ? '30px' : '1rem', width: '100%', maxWidth: isExport ? '800px' : '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isExport ? '30px' : '1.25rem 1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <div style={{ fontSize: isExport ? '24px' : '1rem', color: 'rgba(255,255,255,0.8)' }}>Top Topic</div>
+              <div style={{ fontSize: isExport ? '36px' : '1.5rem', fontWeight: 700, color: 'white' }}>{topTopic}</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isExport ? '30px' : '1.25rem 1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <div style={{ fontSize: isExport ? '24px' : '1rem', color: 'rgba(255,255,255,0.8)' }}>You're a</div>
+              <div style={{ fontSize: isExport ? '36px' : '1.5rem', fontWeight: 700, color: 'white' }}>{mbti.name}</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isExport ? '30px' : '1.25rem 1.5rem', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <div style={{ fontSize: isExport ? '24px' : '1rem', color: 'rgba(255,255,255,0.8)' }}>Peak Time</div>
+              <div style={{ fontSize: isExport ? '36px' : '1.5rem', fontWeight: 700, color: 'white' }}>{peakData.period}</div>
+            </div>
+          </div>
+          <div style={{ marginTop: isExport ? '60px' : '1rem', fontSize: isExport ? '20px' : '1rem', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+            #SearchWrapped
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'minimal',
+      name: 'Minimal',
+      bgColor: `linear-gradient(180deg, #667eea 0%, #764ba2 100%)`,
+      renderCard: (isExport = false) => (
+        <div style={{
+          width: isExport ? '1080px' : '100%',
+          height: isExport ? '1080px' : 'auto',
+          background: `linear-gradient(180deg, #667eea 0%, #764ba2 100%)`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: isExport ? '100px' : '2.5rem',
+          boxSizing: 'border-box',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          borderRadius: isExport ? '0' : '20px',
+        }}>
+          <div style={{ fontSize: isExport ? '28px' : '1.2rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: isExport ? '60px' : '2rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Your Year in Searches
+          </div>
+          <div style={{ fontSize: isExport ? '140px' : '5.5rem', fontWeight: 900, color: 'white', marginBottom: isExport ? '30px' : '0.5rem', lineHeight: 1, letterSpacing: '-0.05em' }}>
+            {totalPrompts.toLocaleString()}
+          </div>
+          <div style={{ fontSize: isExport ? '24px' : '1rem', fontWeight: 500, color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '80px' : '3rem' }}>
+            searches
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isExport ? '40px' : '1rem', width: '100%', maxWidth: isExport ? '900px' : '100%' }}>
+            <div style={{ textAlign: 'center', padding: isExport ? '40px' : '1.5rem', background: 'rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: isExport ? '20px' : '0.5rem' }}>TOP TOPIC</div>
+              <div style={{ fontSize: isExport ? '32px' : '1.3rem', fontWeight: 700, color: 'white' }}>{topTopic}</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: isExport ? '40px' : '1.5rem', background: 'rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: isExport ? '20px' : '0.5rem' }}>PERSONALITY</div>
+              <div style={{ fontSize: isExport ? '32px' : '1.3rem', fontWeight: 700, color: 'white' }}>{mbti.name}</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: isExport ? '40px' : '1.5rem', background: 'rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: isExport ? '20px' : '0.5rem' }}>PEAK TIME</div>
+              <div style={{ fontSize: isExport ? '32px' : '1.3rem', fontWeight: 700, color: 'white' }}>{peakData.period}</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: isExport ? '40px' : '1.5rem', background: 'rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: isExport ? '20px' : '0.5rem' }}>YEAR</div>
+              <div style={{ fontSize: isExport ? '32px' : '1.3rem', fontWeight: 700, color: 'white' }}>2024</div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'bold',
+      name: 'Bold',
+      bgColor: `linear-gradient(135deg, #f093fb 0%, #f5576c 100%)`,
+      renderCard: (isExport = false) => (
+        <div style={{
+          width: isExport ? '1080px' : '100%',
+          height: isExport ? '1080px' : 'auto',
+          background: isExport ? mbti.color[0] : `linear-gradient(135deg, #f093fb 0%, #f5576c 100%)`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          padding: isExport ? '100px' : '2.5rem',
+          boxSizing: 'border-box',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          borderRadius: isExport ? '0' : '20px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, width: isExport ? '600px' : '50%', height: '100%', background: isExport ? `radial-gradient(circle, ${mbti.color[1]} 0%, transparent 70%)` : `radial-gradient(circle, #f5576c 0%, transparent 70%)`, opacity: 0.3 }} />
+          <div style={{ fontSize: isExport ? '36px' : '1.8rem', fontWeight: 900, color: 'white', marginBottom: isExport ? '40px' : '1.5rem', lineHeight: 1.2, zIndex: 1 }}>
+            {totalPrompts.toLocaleString()}<br />
+            <span style={{ fontSize: isExport ? '28px' : '1.2rem', fontWeight: 600, opacity: 0.9 }}>searches</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isExport ? '35px' : '1.25rem', width: '100%', zIndex: 1 }}>
+            <div style={{ padding: isExport ? '35px' : '1.5rem', background: 'rgba(255,255,255,0.15)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ fontSize: isExport ? '22px' : '0.9rem', color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '15px' : '0.5rem', fontWeight: 600 }}>TOP TOPIC</div>
+              <div style={{ fontSize: isExport ? '40px' : '1.8rem', fontWeight: 800, color: 'white' }}>{topTopic}</div>
+            </div>
+            <div style={{ padding: isExport ? '35px' : '1.5rem', background: 'rgba(255,255,255,0.15)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ fontSize: isExport ? '22px' : '0.9rem', color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '15px' : '0.5rem', fontWeight: 600 }}>YOU'RE A</div>
+              <div style={{ fontSize: isExport ? '40px' : '1.8rem', fontWeight: 800, color: 'white' }}>{mbti.name}</div>
+            </div>
+            <div style={{ padding: isExport ? '35px' : '1.5rem', background: 'rgba(255,255,255,0.15)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ fontSize: isExport ? '22px' : '0.9rem', color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '15px' : '0.5rem', fontWeight: 600 }}>PEAK TIME</div>
+              <div style={{ fontSize: isExport ? '40px' : '1.8rem', fontWeight: 800, color: 'white' }}>{peakData.period}</div>
+            </div>
+          </div>
+          <div style={{ position: 'absolute', bottom: isExport ? '60px' : '1.5rem', right: isExport ? '60px' : '1.5rem', fontSize: isExport ? '18px' : '0.85rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500, zIndex: 1 }}>
+            #SearchWrapped
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'centered',
+      name: 'Centered',
+      bgColor: `linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)`,
+      renderCard: (isExport = false) => (
+        <div style={{
+          width: isExport ? '1080px' : '100%',
+          height: isExport ? '1080px' : 'auto',
+          background: isExport ? `linear-gradient(135deg, ${mbti.color[0]} 0%, ${mbti.color[1]} 50%, ${mbti.color[0]} 100%)` : `linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: isExport ? '80px' : '2rem',
+          boxSizing: 'border-box',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          borderRadius: isExport ? '0' : '20px',
+          textAlign: 'center',
+        }}>
+          <div style={{ fontSize: isExport ? '30px' : '1.4rem', fontWeight: 700, color: 'rgba(255,255,255,0.95)', marginBottom: isExport ? '50px' : '2rem' }}>
+            Your Search Wrapped
+          </div>
+          <div style={{ fontSize: isExport ? '150px' : '6rem', fontWeight: 900, color: 'white', marginBottom: isExport ? '50px' : '1rem', lineHeight: 1, letterSpacing: '-0.05em' }}>
+            {totalPrompts.toLocaleString()}
+          </div>
+          <div style={{ fontSize: isExport ? '26px' : '1.1rem', fontWeight: 500, color: 'rgba(255,255,255,0.8)', marginBottom: isExport ? '80px' : '3rem' }}>
+            searches this year
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: isExport ? '25px' : '0.75rem', justifyContent: 'center', flexWrap: 'wrap', width: '100%', maxWidth: isExport ? '900px' : '100%' }}>
+            <div style={{ padding: isExport ? '25px 40px' : '1rem 1.5rem', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.25)' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '8px' : '0.25rem' }}>Topic</div>
+              <div style={{ fontSize: isExport ? '28px' : '1.2rem', fontWeight: 700, color: 'white' }}>{topTopic}</div>
+            </div>
+            <div style={{ padding: isExport ? '25px 40px' : '1rem 1.5rem', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.25)' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '8px' : '0.25rem' }}>Type</div>
+              <div style={{ fontSize: isExport ? '28px' : '1.2rem', fontWeight: 700, color: 'white' }}>{mbti.name}</div>
+            </div>
+            <div style={{ padding: isExport ? '25px 40px' : '1rem 1.5rem', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.25)' }}>
+              <div style={{ fontSize: isExport ? '20px' : '0.85rem', color: 'rgba(255,255,255,0.7)', marginBottom: isExport ? '8px' : '0.25rem' }}>Time</div>
+              <div style={{ fontSize: isExport ? '28px' : '1.2rem', fontWeight: 700, color: 'white' }}>{peakData.period}</div>
+            </div>
+          </div>
+          <div style={{ marginTop: isExport ? '70px' : '2rem', fontSize: isExport ? '22px' : '1rem', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+            #SearchWrapped
+          </div>
+        </div>
+      )
+    }
+  ];
+  
+  const handleShare = async (e) => {
+    e.stopPropagation();
+    setIsGenerating(true);
+    try {
+      // Dynamic import of html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
+      if (!cardRef.current) {
+        setIsGenerating(false);
+        return;
+      }
+      
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        width: 1080,
+        height: 1080,
+      });
+      
+      // Convert to blob
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          setIsGenerating(false);
+          return;
+        }
+        
+        const file = new File([blob], 'my-search-wrapped.png', { type: 'image/png' });
+        
+        // Try Web Share API first (supports file sharing)
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: 'My Search Wrapped',
+              text: `I made ${totalPrompts.toLocaleString()} searches this year! Check out my Search Wrapped.`,
+              files: [file],
+            });
+            setIsGenerating(false);
+            return;
+          } catch (shareError) {
+            // User cancelled or error, fall through to download
+            console.log('Share cancelled or failed:', shareError);
+          }
+        }
+        
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'my-search-wrapped.png';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        setIsGenerating(false);
+      }, 'image/png');
+    } catch (error) {
+      console.error('Error generating share card:', error);
+      setIsGenerating(false);
+    }
+  };
+  
+  const nextCard = () => {
+    setSelectedCardIndex((prev) => (prev + 1) % cardDesigns.length);
+  };
+  
+  const prevCard = () => {
+    setSelectedCardIndex((prev) => (prev - 1 + cardDesigns.length) % cardDesigns.length);
+  };
+  
+  if (!isOpen) return null;
+  
+  const currentCard = cardDesigns[selectedCardIndex];
+  
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="share-modal-overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(10px)',
+          zIndex: 10000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}
+      >
+        <motion.div
+          className="share-modal-content"
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            maxWidth: '600px',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            position: 'relative',
+          }}
+        >
+          {/* Close button - positioned over card */}
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute',
+              top: '-12px',
+              right: '-12px',
+              background: 'rgba(0, 0, 0, 0.7)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'white',
+              zIndex: 10001,
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(0, 0, 0, 0.9)';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(0, 0, 0, 0.7)';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
+            <X size={20} />
+          </button>
+          
+          {/* Share Card - Hidden version for export */}
+          <div 
+            ref={cardRef}
+            className="share-card-export"
+            style={{
+              width: '1080px',
+              height: '1080px',
+              position: 'absolute',
+              left: '-9999px',
+              top: '-9999px',
+            }}
+          >
+            {currentCard.renderCard(true)}
+          </div>
+          
+          {/* Visible Card Preview */}
+          <motion.div
+            key={selectedCardIndex}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            style={{ position: 'relative' }}
+          >
+            {currentCard.renderCard(false)}
+          </motion.div>
+          
+          {/* Card Carousel - Spotify Remember This style */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1rem',
+            marginTop: '1rem',
+          }}>
+            {/* Previous button */}
+            <button
+              onClick={prevCard}
+              disabled={cardDesigns.length <= 1}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'white',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            
+            {/* Card previews */}
+            <div 
+              className="share-card-previews"
+              style={{
+                display: 'flex',
+                gap: '0.75rem',
+                alignItems: 'center',
+                overflowX: 'auto',
+              }}
+            >
+              {cardDesigns.map((design, index) => (
+                <button
+                  key={design.id}
+                  onClick={() => setSelectedCardIndex(index)}
+                  style={{
+                    minWidth: '80px',
+                    height: '100px',
+                    borderRadius: '12px',
+                    border: selectedCardIndex === index ? '3px solid white' : '2px solid rgba(255, 255, 255, 0.5)',
+                    background: design.bgColor || `linear-gradient(135deg, ${mbti.color[0]} 0%, ${mbti.color[1]} 100%)`,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    transform: selectedCardIndex === index ? 'scale(1.1)' : 'scale(1)',
+                    opacity: selectedCardIndex === index ? 1 : 0.7,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    boxShadow: selectedCardIndex === index ? '0 4px 20px rgba(255, 255, 255, 0.3)' : '0 2px 10px rgba(0, 0, 0, 0.2)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedCardIndex !== index) {
+                      e.target.style.opacity = '0.9';
+                      e.target.style.transform = 'scale(1.05)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedCardIndex !== index) {
+                      e.target.style.opacity = '0.7';
+                      e.target.style.transform = 'scale(1)';
+                    }
+                  }}
+                >
+                  {/* Skeleton outline for preview */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    left: '8px',
+                    right: '8px',
+                    height: '12px',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: '28px',
+                    left: '8px',
+                    right: '8px',
+                    height: '20px',
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: '54px',
+                    left: '8px',
+                    width: '30px',
+                    height: '8px',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    top: '54px',
+                    right: '8px',
+                    width: '20px',
+                    height: '8px',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '24px',
+                    left: '8px',
+                    right: '8px',
+                    height: '6px',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    borderRadius: '3px',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '8px',
+                    left: '8px',
+                    right: '8px',
+                    height: '6px',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    borderRadius: '3px',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                  }} />
+                  
+                  {/* Design name label */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    left: '4px',
+                    right: '4px',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    color: 'white',
+                    textAlign: 'center',
+                    background: selectedCardIndex === index ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.4)',
+                    borderRadius: '4px',
+                    padding: '3px 4px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  }}>
+                    {design.name}
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            {/* Next button */}
+            <button
+              onClick={nextCard}
+              disabled={cardDesigns.length <= 1}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'white',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+          
+          {/* Share Button */}
+          <motion.button
+            className="share-card-button"
+            onClick={handleShare}
+            disabled={isGenerating}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              cursor: isGenerating ? 'wait' : 'pointer',
+              marginTop: '0.5rem',
+              width: '100%',
+              background: 'white',
+              color: '#0a0a0a',
+              border: 'none',
+              borderRadius: '999px',
+              padding: '1rem 2.5rem',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            {isGenerating ? 'Generating...' : 'Share'}
+          </motion.button>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
@@ -2148,7 +2666,7 @@ export const ActivityHeatmapSlide = ({ heatmapData = null }) => {
                     style={{
                       flex: 1,
                       fontSize: '0.7rem',
-                      color: 'rgba(255,255,255,0.4)',
+                      color: 'rgba(255,255,255,1)',
                       fontWeight: 600,
                       textAlign: i === 0 ? 'left' : 'center',
                     }}
@@ -2170,7 +2688,7 @@ export const ActivityHeatmapSlide = ({ heatmapData = null }) => {
                       style={{
                         width: '32px',
                         fontSize: '0.7rem',
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'rgba(255,255,255,1)',
                         fontWeight: 700,
                         textTransform: 'uppercase',
                         letterSpacing: '0.05em',
