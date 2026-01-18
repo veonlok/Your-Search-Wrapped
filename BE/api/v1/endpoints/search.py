@@ -221,12 +221,20 @@ async def analyze_chatgpt_history(file: UploadFile = File(...)):
             if topics and isinstance(topics[0], tuple):
                 topics = [t[0] if isinstance(t, tuple) else t for t in topics]
             
-            # Get most common topic
+            # Get most common topic and calculate percentage
             topic_counter = Counter(topics)
             top_topic_tuple = topic_counter.most_common(1)[0] if topic_counter else None
             top_topic = top_topic_tuple[0] if top_topic_tuple else "General Knowledge"
+            
+            # Calculate percentage of prompts with top topic
+            if top_topic_tuple and len(topics) > 0:
+                top_topic_count = top_topic_tuple[1] if isinstance(top_topic_tuple, tuple) and len(top_topic_tuple) > 1 else topic_counter[top_topic]
+                top_topic_percentage = round((top_topic_count / len(topics)) * 100)
+            else:
+                top_topic_percentage = 0
         else:
             top_topic = "General Knowledge"
+            top_topic_percentage = 0
         
         # Top 5 searches (original prompts before processing)
         original_counter = Counter(original_prompts)
@@ -297,6 +305,7 @@ async def analyze_chatgpt_history(file: UploadFile = File(...)):
         return WrappedResponse(
             total_searches_past_year=total_searches,
             top_topic=top_topic[:100] if len(top_topic) > 100 else top_topic,  # Truncate if too long
+            top_topic_percentage=top_topic_percentage,
             top_searches=top_searches,
             top_keywords=top_keywords,
             unique_keywords=unique_keywords,

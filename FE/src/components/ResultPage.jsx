@@ -111,7 +111,7 @@ const ResultPage = () => {
     },
     heatmapData: apiData.heatmap_data,
     topTopic: apiData.top_topic,
-    topicPercentage: 34, // Backend doesn't provide this, using placeholder
+    topicPercentage: apiData.top_topic_percentage || 0,
     funStats: {
       longestSession: 'N/A',
       mostSearchesDay: Math.max(...apiData.searches_by_month.map(m => m.frequency)),

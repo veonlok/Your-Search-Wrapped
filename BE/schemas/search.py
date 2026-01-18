@@ -15,6 +15,7 @@ class MonthFrequency(BaseModel):
 class WrappedResponse(BaseModel):
     total_searches_past_year: int
     top_topic: str
+    top_topic_percentage: int  # Percentage of prompts classified as top topic
     top_searches: List[str] = Field(..., max_length=5)
     top_keywords: List[KeywordFrequency] = Field(..., max_length=8)
     unique_keywords: int
