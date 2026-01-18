@@ -76,18 +76,39 @@ const ResultPage = () => {
         const ampm = peakHour < 12 ? 'AM' : 'PM';
         return `${hour12}:00 ${ampm}`;
       })(),
-      period: (() => {
-        const peakHour = apiData.searches_by_hour.indexOf(Math.max(...apiData.searches_by_hour));
-        return (peakHour >= 6 && peakHour < 18) ? 'Early Bird' : 'Night Owl';
+      // Calculate Early Bird vs Night Owl using same logic as backend (data_cleaning.py)
+      // Day: 6 AM to 5 PM (hours 6-17), Night: 6 PM to 5 AM (hours 0-5, 18-23)
+      period: apiData.early_bird_night_owl || (() => {
+        const hourlyData = apiData.searches_by_hour;
+        const daySearches = hourlyData.slice(6, 18).reduce((a, b) => a + b, 0); // Hours 6-17
+        const nightSearches = hourlyData.slice(0, 6).reduce((a, b) => a + b, 0) + 
+                              hourlyData.slice(18, 24).reduce((a, b) => a + b, 0); // Hours 0-5 + 18-23
+        return daySearches > nightSearches ? 'Early Bird' : 'Night Owl';
       })(),
-      isNight: (() => {
-        const peakHour = apiData.searches_by_hour.indexOf(Math.max(...apiData.searches_by_hour));
-        return peakHour < 6 || peakHour >= 18;
-      })(),
+      isNight: apiData.early_bird_night_owl 
+        ? apiData.early_bird_night_owl === 'Night Owl'
+        : (() => {
+            const hourlyData = apiData.searches_by_hour;
+            const daySearches = hourlyData.slice(6, 18).reduce((a, b) => a + b, 0);
+            const nightSearches = hourlyData.slice(0, 6).reduce((a, b) => a + b, 0) + 
+                                  hourlyData.slice(18, 24).reduce((a, b) => a + b, 0);
+            return nightSearches >= daySearches;
+          })(),
       avgSessionLength: 'N/A',
-      mostActiveDay: 'N/A',
+      mostActiveDay: (() => {
+        // Find busiest day from heatmap
+        if (apiData.heatmap_data) {
+          const dayTotals = Object.entries(apiData.heatmap_data).map(([day, hours]) => ({
+            day,
+            total: hours.reduce((a, b) => a + b, 0)
+          }));
+          return dayTotals.reduce((a, b) => a.total > b.total ? a : b).day;
+        }
+        return 'N/A';
+      })(),
       totalHours: Math.round(apiData.total_searches_past_year * 2 / 60) // Estimate: 2 min per search
     },
+    heatmapData: apiData.heatmap_data,
     topTopic: apiData.top_topic,
     topicPercentage: 34, // Backend doesn't provide this, using placeholder
     funStats: {
@@ -112,7 +133,7 @@ const ResultPage = () => {
     { id: 'wordcloud', component: <WordCloudSlide keywords={wrappedData.keywords} /> },
     { id: 'mood', component: <MoodTimelineSlide moodData={wrappedData.moodData} /> },
     { id: 'peak', component: <PeakTimesSlide peakData={wrappedData.peakData} /> },
-    { id: 'heatmap', component: <ActivityHeatmapSlide /> },
+    { id: 'heatmap', component: <ActivityHeatmapSlide heatmapData={wrappedData.heatmapData} /> },
     { id: 'personality', component: <PersonalitySlide personality={wrappedData.personality} /> },
     { id: 'personality-deep', component: <PersonalityDeepDiveSlide personality={wrappedData.personality} /> },
     { id: 'funstats', component: <FunStatsSlide stats={wrappedData.funStats} /> },

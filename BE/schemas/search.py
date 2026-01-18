@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Dict
 from pydantic import BaseModel, Field
 
 
@@ -20,4 +20,6 @@ class WrappedResponse(BaseModel):
     unique_keywords: int
     searches_by_month: List[MonthFrequency]
     searches_by_hour: List[int] = Field(..., min_length=24, max_length=24)
+    heatmap_data: Dict[str, List[int]]  # Day of week -> 24 hourly counts
+    early_bird_night_owl: str  # "Early Bird" or "Night Owl"
     mbti: str

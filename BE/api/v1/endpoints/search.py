@@ -253,6 +253,44 @@ async def analyze_chatgpt_history(file: UploadFile = File(...)):
         # Hourly distribution (target year)
         hourly_counts = df_yearly.groupby(df_yearly['Hour']).size().reindex(range(24), fill_value=0).tolist()
         
+        # Heatmap data - same as data_cleaning.py
+        # Add DayOfWeek column
+        df_yearly['DayOfWeek'] = df_yearly['datetime'].dt.day_name()
+        
+        # Create pivot table for heatmap
+        heatmap_pivot = df_yearly.pivot_table(
+            index='DayOfWeek', 
+            columns='Hour', 
+            values='timestamp', 
+            aggfunc='count'
+        ).fillna(0)
+        
+        # Ensure all hours 0-23 exist
+        for hour in range(24):
+            if hour not in heatmap_pivot.columns:
+                heatmap_pivot[hour] = 0
+        heatmap_pivot = heatmap_pivot.reindex(columns=range(24), fill_value=0)
+        
+        # Sort days of the week correctly and convert to dict
+        days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        heatmap_data = {}
+        for day in days_order:
+            if day in heatmap_pivot.index:
+                heatmap_data[day] = [int(x) for x in heatmap_pivot.loc[day].tolist()]
+            else:
+                heatmap_data[day] = [0] * 24
+        
+        # Early Bird vs Night Owl calculation - same as data_cleaning.py
+        # Day Search: 6 AM (inclusive) to 5 PM (inclusive) -> Hours 6 through 17
+        day_mask = (df_yearly['Hour'] >= 6) & (df_yearly['Hour'] <= 17)
+        total_day_searches = df_yearly[day_mask].shape[0]
+        total_night_searches = df_yearly[~day_mask].shape[0]
+        
+        if total_day_searches > total_night_searches:
+            early_bird_night_owl = "Early Bird"
+        else:
+            early_bird_night_owl = "Night Owl"
+        
         # MBTI inference based on processed keywords
         mbti = infer_mbti(keyword_counter)
         
@@ -264,6 +302,8 @@ async def analyze_chatgpt_history(file: UploadFile = File(...)):
             unique_keywords=unique_keywords,
             searches_by_month=searches_by_month,
             searches_by_hour=hourly_counts,
+            heatmap_data=heatmap_data,
+            early_bird_night_owl=early_bird_night_owl,
             mbti=mbti
         )
         
