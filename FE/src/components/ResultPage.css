@@ -1,0 +1,84 @@
+/* Result Page - Spotify Wrapped Style */
+
+.result-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: #0a0a0a;
+}
+
+.slide-wrapper {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Progress bar at top - Instagram/Spotify Stories style */
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  gap: 4px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+  transition: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-segment::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  transition: width 0.3s ease-out;
+}
+
+.progress-segment.completed::after {
+  width: 100%;
+}
+
+.progress-segment:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .progress-bar-container {
+    padding: 12px;
+    gap: 3px;
+  }
+  
+  .progress-segment {
+    height: 3px;
+  }
+}
+
+/* Ensure smooth animations and text rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
