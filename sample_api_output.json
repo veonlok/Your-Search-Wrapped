@@ -1,0 +1,123 @@
+{
+    "total_searches_past_year": 5373,
+    "top_topic": "General Knowledge",
+    "top_searches": [
+        "yes",
+        "yes do that",
+        "give me the full code",
+        "give me more",
+        "sure"
+    ],
+    "top_keywords": [
+        {
+            "keyword": "date",
+            "frequency": 5222
+        },
+        {
+            "keyword": "df",
+            "frequency": 4418
+        },
+        {
+            "keyword": "return",
+            "frequency": 3581
+        },
+        {
+            "keyword": "x",
+            "frequency": 2336
+        },
+        {
+            "keyword": "value",
+            "frequency": 2276
+        },
+        {
+            "keyword": "sgd",
+            "frequency": 2132
+        },
+        {
+            "keyword": "c",
+            "frequency": 2073
+        },
+        {
+            "keyword": "int",
+            "frequency": 1999
+        }
+    ],
+    "unique_keywords": 11527,
+    "searches_by_month": [
+        {
+            "month_number": 1,
+            "frequency": 277
+        },
+        {
+            "month_number": 2,
+            "frequency": 327
+        },
+        {
+            "month_number": 3,
+            "frequency": 259
+        },
+        {
+            "month_number": 4,
+            "frequency": 622
+        },
+        {
+            "month_number": 5,
+            "frequency": 389
+        },
+        {
+            "month_number": 6,
+            "frequency": 626
+        },
+        {
+            "month_number": 7,
+            "frequency": 427
+        },
+        {
+            "month_number": 8,
+            "frequency": 660
+        },
+        {
+            "month_number": 9,
+            "frequency": 949
+        },
+        {
+            "month_number": 10,
+            "frequency": 395
+        },
+        {
+            "month_number": 11,
+            "frequency": 252
+        },
+        {
+            "month_number": 12,
+            "frequency": 190
+        }
+    ],
+    "searches_by_hour": [
+        494,
+        381,
+        85,
+        9,
+        2,
+        0,
+        0,
+        0,
+        49,
+        123,
+        127,
+        293,
+        331,
+        289,
+        268,
+        250,
+        344,
+        340,
+        278,
+        166,
+        258,
+        381,
+        458,
+        447
+    ],
+    "mbti": "ISFP"
+}

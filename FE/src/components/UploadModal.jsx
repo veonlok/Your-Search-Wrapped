@@ -36,12 +36,12 @@ const UploadModal = ({ onClose, onSubmit }) => {
   const validateAndAddFile = (selectedFile) => {
     if (!selectedFile) return;
 
-    const validFormats = ['.doc', '.docx', '.pdf'];
+    const validFormats = ['.zip'];
     const fileExtension = '.' + selectedFile.name.split('.').pop().toLowerCase();
     const maxSize = 500 * 1024 * 1024; // 500MB
 
-    if (!validFormats.includes(fileExtension) && fileExtension !== '.docx') {
-      alert('Invalid file format. Please upload a .doc or .pdf file.');
+    if (!validFormats.includes(fileExtension)) {
+      alert('Invalid file format. Please upload a .zip file.');
       return;
     }
 
@@ -65,19 +65,40 @@ const UploadModal = ({ onClose, onSubmit }) => {
     if (files.length === 0) return;
 
     setIsUploading(true);
+    setUploadProgress(10);
     
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      setUploadProgress(i);
-    }
+    try {
+      // Create FormData and upload to backend
+      const formData = new FormData();
+      formData.append('file', files[0]); // Backend expects single file with key 'file'
 
-    // Call the onSubmit callback with the files
-    if (onSubmit) {
-      await onSubmit(files);
-    }
+      setUploadProgress(30);
 
-    setIsUploading(false);
+      const response = await fetch('http://localhost:8000/api/v1/search/search-history', {
+        method: 'POST',
+        body: formData,
+      });
+
+      setUploadProgress(70);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Upload failed');
+      }
+
+      const data = await response.json();
+      setUploadProgress(100);
+
+      // Call the onSubmit callback with the backend response
+      if (onSubmit) {
+        await onSubmit(data);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const formatFileSize = (bytes) => {
@@ -109,9 +130,9 @@ const UploadModal = ({ onClose, onSubmit }) => {
           <X size={20} />
         </button>
         
-        <h2 className="modal-title">Upload the report</h2>
+        <h2 className="modal-title">Upload your ChatGPT export</h2>
         <p className="modal-subtitle">
-          Make sure the file format meets the requirements. It must be .doc or .pdf
+          Upload your ChatGPT data export (.zip file) to generate your AI Wrapped
         </p>
 
         {!isUploading ? (
@@ -125,7 +146,7 @@ const UploadModal = ({ onClose, onSubmit }) => {
               <div className="dropzone-icon">
                 <div className="doc-icon">
                   <FileText size={48} strokeWidth={1.5} />
-                  <span className="doc-label">.DOC</span>
+                  <span className="doc-label">.ZIP</span>
                   <div className="download-badge">
                     <Download size={16} />
                   </div>
@@ -136,14 +157,13 @@ const UploadModal = ({ onClose, onSubmit }) => {
                 or <button className="choose-file-btn" onClick={handleChooseFile}>choose a file</button>
               </p>
               <p className="dropzone-info">
-                Maximum file size 500MB. • <span className="requirements-link">See more requirements</span>
+                Maximum file size 500MB. • <span className="requirements-link">Export from ChatGPT Settings → Data Controls → Export</span>
               </p>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".doc,.docx,.pdf"
+                accept=".zip"
                 onChange={handleFileInput}
-                multiple
                 style={{ display: 'none' }}
               />
             </div>

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { MBTI_DICTIONARY } from '../constants/mbtiDictionary';
 import { 
   IntroSlide, 
   TotalSearchesSlide, 
@@ -20,84 +21,88 @@ import './ResultPage.css';
 const ResultPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const fileCount = location.state?.fileCount || 1;
+  const apiData = location.state?.wrappedData;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(1);
+
+  // Redirect to home if no data
+  useEffect(() => {
+    if (!apiData) {
+      navigate('/');
+    }
+  }, [apiData, navigate]);
 
   const handleUploadMore = () => {
     navigate('/');
   };
 
-  // Sample data - in real app this would come from backend
-  const wrappedData = {
-    totalPrompts: fileCount * 415,
+  // Helper function to convert month number to name
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  // Get MBTI info from dictionary, fallback to defaults
+  const mbtiInfo = apiData ? (MBTI_DICTIONARY[apiData.mbti] || {
+    name: apiData.mbti,
+    traits: ['Curious', 'Analytical', 'Creative'],
+    description: `Your AI interaction style reflects a ${apiData.mbti} personality.`,
+    details: {
+      strength: 'Versatile problem solving',
+      style: 'Adaptive & thoughtful',
+      funFact: 'You have a unique approach to AI'
+    }
+  }) : null;
+
+  // Transform backend data to match frontend expected format
+  const wrappedData = apiData ? {
+    totalPrompts: apiData.total_searches_past_year,
     personality: {
-      type: 'Deep Diver',
-      code: 'ENTP',
-      traits: ['Curious', 'Analytical', 'Creative'],
-      description: 'You dig deep into topics, asking follow-up questions until you truly understand.'
+      type: mbtiInfo.name || apiData.mbti,
+      code: apiData.mbti,
+      traits: mbtiInfo.traits || ['Curious', 'Analytical', 'Creative'],
+      description: mbtiInfo.description || `Your AI interaction style reflects a ${apiData.mbti} personality.`,
+      details: mbtiInfo.details
     },
-    keywords: [
-      { word: 'Python', count: 156 },
-      { word: 'Machine Learning', count: 134 },
-      { word: 'API', count: 98 },
-      { word: 'React', count: 87 },
-      { word: 'Data', count: 76 },
-      { word: 'JavaScript', count: 72 },
-      { word: 'Algorithm', count: 65 },
-      { word: 'Database', count: 58 },
-      { word: 'AI', count: 54 },
-      { word: 'CSS', count: 48 },
-      { word: 'Code', count: 45 },
-      { word: 'Function', count: 42 },
-      { word: 'Error', count: 38 },
-      { word: 'Debug', count: 35 },
-      { word: 'Deploy', count: 32 },
-      { word: 'Server', count: 28 },
-      { word: 'Frontend', count: 25 },
-      { word: 'Backend', count: 23 },
-      { word: 'Testing', count: 20 },
-      { word: 'Docker', count: 18 }
-    ],
-    moodData: [
-      { month: 'Jan', value: 45 },
-      { month: 'Feb', value: 52 },
-      { month: 'Mar', value: 78 },
-      { month: 'Apr', value: 65 },
-      { month: 'May', value: 89 },
-      { month: 'Jun', value: 72 },
-      { month: 'Jul', value: 58 },
-      { month: 'Aug', value: 94 },
-      { month: 'Sep', value: 81 },
-      { month: 'Oct', value: 76 },
-      { month: 'Nov', value: 88 },
-      { month: 'Dec', value: 92 }
-    ],
+    keywords: apiData.top_keywords.map(kw => ({
+      word: kw.keyword,
+      count: kw.frequency
+    })),
+    moodData: apiData.searches_by_month.map(m => ({
+      month: monthNames[m.month_number - 1],
+      value: m.frequency
+    })),
     peakData: {
-      time: '11:00 PM',
-      period: 'Night Owl',
-      isNight: true,
-      avgSessionLength: '23 min',
-      mostActiveDay: 'Wednesday',
-      totalHours: 347
+      time: (() => {
+        const peakHour = apiData.searches_by_hour.indexOf(Math.max(...apiData.searches_by_hour));
+        const hour12 = peakHour % 12 || 12;
+        const ampm = peakHour < 12 ? 'AM' : 'PM';
+        return `${hour12}:00 ${ampm}`;
+      })(),
+      period: (() => {
+        const peakHour = apiData.searches_by_hour.indexOf(Math.max(...apiData.searches_by_hour));
+        return (peakHour >= 6 && peakHour < 18) ? 'Early Bird' : 'Night Owl';
+      })(),
+      isNight: (() => {
+        const peakHour = apiData.searches_by_hour.indexOf(Math.max(...apiData.searches_by_hour));
+        return peakHour < 6 || peakHour >= 18;
+      })(),
+      avgSessionLength: 'N/A',
+      mostActiveDay: 'N/A',
+      totalHours: Math.round(apiData.total_searches_past_year * 2 / 60) // Estimate: 2 min per search
     },
-    topTopic: 'Machine Learning',
-    topicPercentage: 34,
+    topTopic: apiData.top_topic,
+    topicPercentage: 34, // Backend doesn't provide this, using placeholder
     funStats: {
-      longestSession: '4h 23m',
-      mostSearchesDay: 127,
-      avgPerDay: 12,
-      uniqueTopics: 89,
-      curiosityScore: 94
+      longestSession: 'N/A',
+      mostSearchesDay: Math.max(...apiData.searches_by_month.map(m => m.frequency)),
+      avgPerDay: Math.round(apiData.total_searches_past_year / 365),
+      uniqueTopics: apiData.unique_keywords,
+      curiosityScore: Math.min(99, Math.round(apiData.unique_keywords / 100))
     },
-    topItems: [
-      'Python Programming',
-      'Machine Learning',
-      'React Development', 
-      'Data Analysis',
-      'API Integration'
-    ]
-  };
+    topItems: apiData.top_searches.slice(0, 5)
+  } : null;
+
+  if (!wrappedData) {
+    return null; // Will redirect via useEffect
+  }
 
   const slides = [
     { id: 'intro', component: <IntroSlide /> },

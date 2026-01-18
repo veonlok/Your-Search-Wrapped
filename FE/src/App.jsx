@@ -22,17 +22,12 @@ function HomePage() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleFileSubmit = async (files) => {
-    console.log('Files submitted:', files)
-    setUploadedFile(files)
-    
-    // Here you would typically send the files to your backend
-    // For now, we'll just simulate processing
-    await new Promise(resolve => setTimeout(resolve, 1000))
+  const handleFileSubmit = async (apiResponse) => {
+    console.log('API Response:', apiResponse)
     
     setIsModalOpen(false)
-    // Navigate to result page with file count
-    navigate('/result', { state: { fileCount: files.length } })
+    // Navigate to result page with backend data
+    navigate('/result', { state: { wrappedData: apiResponse } })
   }
 
   return (
