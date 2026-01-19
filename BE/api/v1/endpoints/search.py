@@ -221,12 +221,20 @@ async def analyze_chatgpt_history(file: UploadFile = File(...)):
             if topics and isinstance(topics[0], tuple):
                 topics = [t[0] if isinstance(t, tuple) else t for t in topics]
             
-            # Get most common topic
+            # Get most common topic and calculate percentage
             topic_counter = Counter(topics)
             top_topic_tuple = topic_counter.most_common(1)[0] if topic_counter else None
             top_topic = top_topic_tuple[0] if top_topic_tuple else "General Knowledge"
+            
+            # Calculate percentage of prompts with top topic
+            if top_topic_tuple and len(topics) > 0:
+                top_topic_count = top_topic_tuple[1] if isinstance(top_topic_tuple, tuple) and len(top_topic_tuple) > 1 else topic_counter[top_topic]
+                top_topic_percentage = round((top_topic_count / len(topics)) * 100)
+            else:
+                top_topic_percentage = 0
         else:
             top_topic = "General Knowledge"
+            top_topic_percentage = 0
         
         # Top 5 searches (original prompts before processing)
         original_counter = Counter(original_prompts)
@@ -253,17 +261,58 @@ async def analyze_chatgpt_history(file: UploadFile = File(...)):
         # Hourly distribution (target year)
         hourly_counts = df_yearly.groupby(df_yearly['Hour']).size().reindex(range(24), fill_value=0).tolist()
         
+        # Heatmap data - same as data_cleaning.py
+        # Add DayOfWeek column
+        df_yearly['DayOfWeek'] = df_yearly['datetime'].dt.day_name()
+        
+        # Create pivot table for heatmap
+        heatmap_pivot = df_yearly.pivot_table(
+            index='DayOfWeek', 
+            columns='Hour', 
+            values='timestamp', 
+            aggfunc='count'
+        ).fillna(0)
+        
+        # Ensure all hours 0-23 exist
+        for hour in range(24):
+            if hour not in heatmap_pivot.columns:
+                heatmap_pivot[hour] = 0
+        heatmap_pivot = heatmap_pivot.reindex(columns=range(24), fill_value=0)
+        
+        # Sort days of the week correctly and convert to dict
+        days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        heatmap_data = {}
+        for day in days_order:
+            if day in heatmap_pivot.index:
+                heatmap_data[day] = [int(x) for x in heatmap_pivot.loc[day].tolist()]
+            else:
+                heatmap_data[day] = [0] * 24
+        
+        # Early Bird vs Night Owl calculation - same as data_cleaning.py
+        # Day Search: 6 AM (inclusive) to 5 PM (inclusive) -> Hours 6 through 17
+        day_mask = (df_yearly['Hour'] >= 6) & (df_yearly['Hour'] <= 17)
+        total_day_searches = df_yearly[day_mask].shape[0]
+        total_night_searches = df_yearly[~day_mask].shape[0]
+        
+        if total_day_searches > total_night_searches:
+            early_bird_night_owl = "Early Bird"
+        else:
+            early_bird_night_owl = "Night Owl"
+        
         # MBTI inference based on processed keywords
         mbti = infer_mbti(keyword_counter)
         
         return WrappedResponse(
             total_searches_past_year=total_searches,
             top_topic=top_topic[:100] if len(top_topic) > 100 else top_topic,  # Truncate if too long
+            top_topic_percentage=top_topic_percentage,
             top_searches=top_searches,
             top_keywords=top_keywords,
             unique_keywords=unique_keywords,
             searches_by_month=searches_by_month,
             searches_by_hour=hourly_counts,
+            heatmap_data=heatmap_data,
+            early_bird_night_owl=early_bird_night_owl,
             mbti=mbti
         )
         
